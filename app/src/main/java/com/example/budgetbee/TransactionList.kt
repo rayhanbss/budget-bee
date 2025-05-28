@@ -49,7 +49,7 @@ data class TransactionItem (
 
 val transactions = listOf(
     TransactionItem("Online Class", "19/05/2025", "Rp 999.99,-", true, Icons.Default.School),
-    TransactionItem("Invesment", "19/05/2025", "Rp 999.99,-", false, Icons.Default.BarChart),
+    TransactionItem("Investment", "19/05/2025", "Rp 999.99,-", false, Icons.Default.BarChart),
     TransactionItem("Salary", "19/05/2025", "Rp 999.99,-", true, Icons.Default.AttachMoney),
     TransactionItem("Skincare", "19/05/2025", "Rp 999.99,-", true, Icons.Default.HealthAndSafety),
     TransactionItem("Lunch", "19/05/2025", "Rp 999.99,-", true, Icons.Default.LunchDining),
