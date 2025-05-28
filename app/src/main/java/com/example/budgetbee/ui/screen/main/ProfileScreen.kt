@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
@@ -23,16 +25,16 @@ import com.example.budgetbee.R
 
 @Composable
 fun ProfileScreen() {
-    Column(modifier = Modifier.fillMaxSize()) {
-        // Top Background + Back Button + Title
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Background krem pastel paling bawah
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(220.dp)
-                .background(Color(0xFFF5D98A)) // Krem pastel
+                .background(Color(0xFFF5D98A))
         ) {
             IconButton(
-                onClick = { /* TODO: back navigation */ },
+                onClick = { /* TODO: navigasi back */ },
                 modifier = Modifier
                     .padding(16.dp)
                     .align(Alignment.TopStart)
@@ -49,55 +51,73 @@ fun ProfileScreen() {
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF1B2B29),
-                modifier = Modifier.align(Alignment.TopCenter).padding(top = 20.dp)
-            )
-
-            Column(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // Foto Profil
-                Image(
-                    painter = painterResource(id = R.drawable.profile_photo), // ganti dgn foto kamu
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .size(90.dp)
-                        .clip(CircleShape)
-                        .border(2.dp, Color.White, CircleShape)
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = "John Smith",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = Color(0xFF1B2B29)
-                )
-
-                Text(
-                    text = "ID: 25030024",
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 14.sp,
-                    color = Color.Gray
-                )
-            }
+                    .align(Alignment.TopCenter)
+                    .padding(top = 20.dp)
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Menu Items
-        Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+        // Container putih melengkung di bawah background krem
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 0.dp, max = 600.dp) // batasi tinggi container putih supaya gak penuh layar
+                .align(Alignment.TopCenter)
+                .offset(y = 180.dp) // posisikan sedikit overlapping dengan background krem (220 - 40)
+                .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
+                .background(Color.White)
+                .border(
+                    0.dp,
+                    Color(0x80DDDDDD),
+                    RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+                )
+                .padding(top = 160.dp, start = 24.dp, end = 24.dp)
+        ) {
+            // Menu item profile
             ProfileMenuItem(icon = R.drawable.ic_edit, label = "Edit Profile", bgColor = Color(0xFFF5E6AA))
             ProfileMenuItem(icon = R.drawable.ic_security, label = "Security", bgColor = Color(0xFFFAD23D))
             ProfileMenuItem(icon = R.drawable.ic_setting, label = "Setting", bgColor = Color(0xFFFFB940))
             ProfileMenuItem(icon = R.drawable.ic_help, label = "Help", bgColor = Color(0xFFF5E6AA))
             ProfileMenuItem(icon = R.drawable.ic_logout, label = "Logout", bgColor = Color(0xFFFAD23D))
         }
+
+        // Foto profil di layer paling atas supaya overlap rapi dengan background
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 130.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.profile_photo),
+                contentDescription = "Profile Picture",
+                modifier = Modifier
+                    .size(130.dp)
+                    .clip(CircleShape)
+                    .border(3.dp, Color.White, CircleShape)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = "John Smith",
+                fontWeight = FontWeight.Bold,
+                fontSize = 22.sp,
+                color = Color(0xFF1B2B29)
+            )
+
+            Text(
+                text = "ID: 25030024",
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                color = Color.Gray
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+        }
     }
 }
+
 
 @Composable
 fun ProfileMenuItem(icon: Int, label: String, bgColor: Color) {
@@ -105,29 +125,42 @@ fun ProfileMenuItem(icon: Int, label: String, bgColor: Color) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp)
+            .padding(vertical = 14.dp) // spacing antar menu agak diperbesar
     ) {
         Box(
             modifier = Modifier
-                .size(48.dp)
+                .size(50.dp) // sedikit lebih besar
                 .background(bgColor, shape = CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
+            Image(
                 painter = painterResource(id = icon),
                 contentDescription = label,
-                tint = Color.White,
-                modifier = Modifier.size(24.dp)
-            )
+                modifier = Modifier.size(50.dp)
+                )
         }
 
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(20.dp)) // jarak label lebih jauh dari ikon
 
         Text(
             text = label,
-            fontSize = 16.sp,
+            fontSize = 18.sp, // font lebih besar
             fontWeight = FontWeight.Medium,
             color = Color(0xFF1B2B29)
         )
     }
 }
+
+// Tambahkan fungsi preview ini untuk lihat preview di Android Studio
+@Preview(showBackground = true)
+@Composable
+fun ProfileScreenPreview() {
+    ProfileScreen()
+}
+
+
+
+
+
+
+
