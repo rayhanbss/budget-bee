@@ -64,12 +64,12 @@ fun ProfileScreen() {
                 .heightIn(min = 0.dp, max = 600.dp) // batasi tinggi container putih supaya gak penuh layar
                 .align(Alignment.TopCenter)
                 .offset(y = 180.dp) // posisikan sedikit overlapping dengan background krem (220 - 40)
-                .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
+                .clip(RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp))
                 .background(Color.White)
                 .border(
                     0.dp,
                     Color(0x80DDDDDD),
-                    RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+                    RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
                 )
                 .padding(top = 160.dp, start = 24.dp, end = 24.dp)
         ) {
