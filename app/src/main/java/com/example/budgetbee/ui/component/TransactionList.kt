@@ -38,6 +38,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.budgetbee.ui.theme.Failed
+import com.example.budgetbee.ui.theme.Success
+import com.example.budgetbee.ui.theme.YellowPrimary
+import com.example.budgetbee.ui.theme.YellowTertiary
 
 data class TransactionItem (
     val title: String,
@@ -63,7 +67,7 @@ fun TransactionItemView(item: TransactionItem) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
         shape = RoundedCornerShape(4.dp),
-        border = BorderStroke(1.dp, Color(0xFFFECD40)),
+        border = BorderStroke(1.dp, YellowPrimary),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Row(
@@ -75,7 +79,7 @@ fun TransactionItemView(item: TransactionItem) {
                 modifier = Modifier.size(24.dp),
                 imageVector = item.icon,
                 contentDescription = item.title,
-                tint = Color(0xFFFECD40)
+                tint = YellowPrimary
             )
 
             Spacer(modifier = Modifier.width(10.dp))
@@ -90,7 +94,7 @@ fun TransactionItemView(item: TransactionItem) {
             Icon(
                 imageVector = if (item.isExpense) Icons.Default.ArrowOutward else Icons.AutoMirrored.Filled.CallReceived,
                 contentDescription = if (item.isExpense) "Expense" else "Income",
-                tint = if (item.isExpense) Color(0xFFFF2828) else Color(0xFF40FE7F),
+                tint = if (item.isExpense) Failed else Success,
                 modifier = Modifier.size(24.dp)
             )
         }
