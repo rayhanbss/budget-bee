@@ -104,7 +104,9 @@ fun LoginFormFields(navController: NavController) {
                 focusedBorderColor = Black,
                 unfocusedBorderColor = Gray,
                 focusedLabelColor = Black,
-                unfocusedLabelColor = Gray
+                unfocusedLabelColor = Gray,
+                focusedTextColor = Black,
+                unfocusedTextColor = Black
             )
         )
     }
@@ -135,7 +137,9 @@ fun LoginFormFields(navController: NavController) {
                 focusedBorderColor = Black,
                 unfocusedBorderColor = Gray,
                 focusedLabelColor = Black,
-                unfocusedLabelColor = Gray
+                unfocusedLabelColor = Gray,
+                focusedTextColor = Black,
+                unfocusedTextColor = Black
             )
         )
     }

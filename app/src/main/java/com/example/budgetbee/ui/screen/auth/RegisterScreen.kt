@@ -66,7 +66,6 @@ fun RegisterScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var mobileNumber by remember { mutableStateOf("") }
     var dateOfBirth by remember { mutableStateOf("") }
-    var showDatePicker by remember { mutableStateOf(false) }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -165,18 +164,14 @@ fun RegisterScreen(navController: NavController) {
 
             TextField(
                 value = dateOfBirth,
-                onValueChange = { },
+                onValueChange = { dateOfBirth = it },
                 label = { Text("Date Of Birth") },
                 placeholder = { Text("DD / MM / YYY") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClickLabel = "Select Date") {
-                        showDatePicker = true
-                    },
+                modifier = Modifier.fillMaxWidth(),
                 colors = textFieldColors,
                 shape = textFieldShape,
                 singleLine = true,
-                readOnly = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
             )
 
             TextField(
@@ -264,38 +259,6 @@ fun RegisterScreen(navController: NavController) {
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        if (showDatePicker) {
-            val datePickerState = rememberDatePickerState()
-            DatePickerDialog(
-                onDismissRequest = { showDatePicker = false },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            showDatePicker = false
-                            datePickerState.selectedDateMillis?.let { millis ->
-                                val calendar = Calendar.getInstance().apply {
-                                    timeInMillis = millis
-                                }
-                                val day = calendar.get(Calendar.DAY_OF_MONTH)
-                                val month = calendar.get(Calendar.MONTH) + 1
-                                val year = calendar.get(Calendar.YEAR)
-                                dateOfBirth = String.format("%02d/%02d/%04d", day, month, year)
-                            }
-                        }
-                    ) {
-                        Text("OK")
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showDatePicker = false }) {
-                        Text("Cancel")
-                    }
-                }
-            ) {
-                DatePicker(state = datePickerState)
-            }
         }
     }
 }
