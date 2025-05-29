@@ -158,7 +158,7 @@ fun LoginFormFields(navController: NavController) {
         text = "Forgot Password?",
         modifier = Modifier
             .padding(top = 12.dp)
-            .clickable { /* Handle Forgot Password */ },
+            .clickable { navController.navigate("forgot") },
         fontSize = 12.sp,
         fontWeight = FontWeight.SemiBold,
         color = Black
@@ -175,7 +175,7 @@ fun LoginFormFields(navController: NavController) {
             fontSize = 12.sp,
             color = Color.Blue,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.clickable { /* Handle Sign Up */ }
+            modifier = Modifier.clickable { navController.navigate("register") }
         )
     }
 }

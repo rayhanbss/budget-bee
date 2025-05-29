@@ -8,29 +8,24 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.budgetbee.ui.component.NavBar
-import com.example.budgetbee.ui.screen.auth.LoginScreen
-import com.example.budgetbee.ui.screen.auth.RegisterScreen
-import com.example.budgetbee.ui.screen.main.DashboardScreen
-import com.example.budgetbee.ui.screen.main.ProfileScreen
-import com.example.budgetbee.ui.screen.main.TargetScreen
-import com.example.budgetbee.ui.screen.main.TransactionPage
+import com.example.budgetbee.ui.component.RegisterScreen
+import com.example.budgetbee.ui.screen.auth.*
+import com.example.budgetbee.ui.screen.main.*
 import com.example.budgetbee.ui.theme.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        installSplashScreen()
         setContent {
             BudgetBeeTheme {
                 val navController = rememberNavController()
@@ -40,7 +35,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
-                        if (currentRoute !in listOf("login", "register")) {
+                        if (currentRoute !in listOf("login", "register", "launch", "forgot")) {
                             NavBar(navController, currentRoute)
                         }
                     }
@@ -52,14 +47,16 @@ class MainActivity : ComponentActivity() {
                     ) {
                         NavHost(
                             navController = navController,
-                            startDestination = "login"
+                            startDestination = "launch"
                         ) {
                             composable("dashboard") { DashboardScreen() }
-                            composable("transaction") { TransactionPage(navController = navController) }
+                            composable("transaction") { TransactionScreen() }
                             composable("target") { TargetScreen() }
-                            composable("profile") { ProfileScreen() }
+                            composable("profile") { ProfileScreen(navController) }
                             composable("login") { LoginScreen(navController) }
                             composable("register") { RegisterScreen(navController) }
+                            composable("launch") { LaunchPage(navController)}
+                            composable("forgot") { ForgotPasswordScreen(navController) }
                         }
                     }
                 }

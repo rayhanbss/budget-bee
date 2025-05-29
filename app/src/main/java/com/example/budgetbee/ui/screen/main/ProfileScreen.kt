@@ -3,6 +3,7 @@ package com.example.budgetbee.ui.screen.main
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,64 +22,55 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
+import androidx.navigation.NavController
 import com.example.budgetbee.R
+import com.example.budgetbee.ui.theme.White
+import com.example.budgetbee.ui.theme.YellowPrimary
+import com.example.budgetbee.ui.theme.YellowTertiary
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(navController: NavController) {
     Box(modifier = Modifier.fillMaxSize()) {
         // Background krem pastel paling bawah
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(220.dp)
-                .background(Color(0xFFF5D98A))
+                .background(YellowPrimary)
         ) {
-            IconButton(
-                onClick = { /* TODO: navigasi back */ },
-                modifier = Modifier
-                    .padding(16.dp)
-                    .align(Alignment.TopStart)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.DarkGray
-                )
-            }
 
             Text(
                 text = "Profile",
-                fontSize = 20.sp,
+                fontSize = 38.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF1B2B29),
+                color = White,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(top = 20.dp)
+                    .padding(top = 48.dp)
             )
         }
 
         // Container putih melengkung di bawah background krem
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 0.dp, max = 600.dp) // batasi tinggi container putih supaya gak penuh layar
+                .fillMaxSize()
                 .align(Alignment.TopCenter)
-                .offset(y = 180.dp) // posisikan sedikit overlapping dengan background krem (220 - 40)
-                .clip(RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp))
+                .offset(y = 180.dp)
+                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                 .background(Color.White)
-                .border(
-                    0.dp,
-                    Color(0x80DDDDDD),
-                    RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
-                )
-                .padding(top = 160.dp, start = 24.dp, end = 24.dp)
+                .padding(top = 160.dp, start = 32.dp, end = 32.dp)
         ) {
             // Menu item profile
             ProfileMenuItem(icon = R.drawable.ic_edit, label = "Edit Profile", bgColor = Color(0xFFF5E6AA))
             ProfileMenuItem(icon = R.drawable.ic_security, label = "Security", bgColor = Color(0xFFFAD23D))
             ProfileMenuItem(icon = R.drawable.ic_setting, label = "Setting", bgColor = Color(0xFFFFB940))
             ProfileMenuItem(icon = R.drawable.ic_help, label = "Help", bgColor = Color(0xFFF5E6AA))
-            ProfileMenuItem(icon = R.drawable.ic_logout, label = "Logout", bgColor = Color(0xFFFAD23D))
+            ProfileMenuItem(
+                icon = R.drawable.ic_logout,
+                label = "Logout",
+                bgColor = Color(0xFFFAD23D),
+                onClick = {navController.navigate("launch")
+            })
         }
 
         // Foto profil di layer paling atas supaya overlap rapi dengan background
@@ -120,12 +112,13 @@ fun ProfileScreen() {
 
 
 @Composable
-fun ProfileMenuItem(icon: Int, label: String, bgColor: Color) {
+fun ProfileMenuItem(icon: Int, label: String, bgColor: Color, onClick: () -> Unit = {}) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 14.dp) // spacing antar menu agak diperbesar
+            .padding(vertical = 14.dp)
+            .clickable { onClick() }
     ) {
         Box(
             modifier = Modifier
@@ -149,13 +142,6 @@ fun ProfileMenuItem(icon: Int, label: String, bgColor: Color) {
             color = Color(0xFF1B2B29)
         )
     }
-}
-
-// Tambahkan fungsi preview ini untuk lihat preview di Android Studio
-@Preview(showBackground = true)
-@Composable
-fun ProfileScreenPreview() {
-    ProfileScreen()
 }
 
 

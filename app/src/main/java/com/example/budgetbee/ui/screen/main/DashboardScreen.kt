@@ -1,5 +1,6 @@
 package com.example.budgetbee.ui.screen.main
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -28,11 +29,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.budgetbee.R
+import com.example.budgetbee.data.model.allTargets
 import com.example.budgetbee.data.model.transactions
+import com.example.budgetbee.ui.component.CompactTargetCard
 import com.example.budgetbee.ui.component.TransactionRow
 import com.example.budgetbee.ui.theme.Black
 import com.example.budgetbee.ui.theme.Failed
@@ -61,17 +69,23 @@ fun DashboardScreen(modifier: Modifier = Modifier){
                 // Dashboard top
                 Box(modifier = Modifier
                     .fillMaxWidth()
-                    .background(YellowTertiary)
+                    .background(White)
                     .drawBehind {
-                        val strokeWidth = 1.dp.toPx()
-                        drawLine(
-                            color = YellowPrimary,
-                            start = Offset(0f, size.height - strokeWidth / 2),
-                            end = Offset(size.width, size.height - strokeWidth / 2),
-                            strokeWidth = strokeWidth
+                        drawRoundRect(
+                            color = YellowTertiary,
+                            topLeft = Offset(0f, 0f),
+                            size = Size(size.width, 600f),
                         )
                     }
                 ) {
+                    Image(
+                        painter = painterResource(R.drawable.header),
+                        contentDescription = "Header",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 200.dp),
+                        contentScale = ContentScale.Crop
+                    )
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -240,6 +254,16 @@ fun DashboardScreen(modifier: Modifier = Modifier){
             }
         }
 
+        items(allTargets.take(3)) { item ->
+            CompactTargetCard(
+                target = item,
+                modifier = Modifier
+                    .padding(32.dp, 4.dp)
+                    .fillMaxWidth(),
+                onClick = { TODO() }
+            )
+        }
+
         // Recent Transaction
         item{
             Row(
@@ -265,8 +289,10 @@ fun DashboardScreen(modifier: Modifier = Modifier){
             }
         }
 
-        items(transactions.take(10)) { item ->
-            TransactionRow(item)
+        items(transactions.take(5)) { item ->
+            TransactionRow(
+                item = item
+            )
         }
     }
 }

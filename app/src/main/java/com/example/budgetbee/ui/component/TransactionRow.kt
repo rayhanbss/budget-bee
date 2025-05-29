@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.budgetbee.TransactionItem
+import com.example.budgetbee.data.model.TransactionItem
 import com.example.budgetbee.ui.theme.Black
 import com.example.budgetbee.ui.theme.Failed
 import com.example.budgetbee.ui.theme.Success
@@ -31,7 +31,7 @@ import com.example.budgetbee.ui.theme.YellowPrimary
 import com.example.budgetbee.ui.theme.YellowTertiary
 
 @Composable
-fun TransactionRow(item: TransactionItem) {
+fun TransactionRow(modifier: Modifier = Modifier, item: TransactionItem) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -101,6 +101,7 @@ fun TransactionRow(item: TransactionItem) {
 fun TransactionRowPreview() {
     val sampleItem = TransactionItem(
         title = "Lunch",
+        category = "Food",
         date = "19/05/2025",
         amount = "Rp 999.99,-",
         isExpense = false,

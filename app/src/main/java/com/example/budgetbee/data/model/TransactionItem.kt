@@ -10,10 +10,10 @@ import androidx.compose.material.icons.filled.LunchDining
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.budgetbee.TransactionItem
 
 data class TransactionItem(
     val title: String,
+    val category: String,
     val date: String,
     val amount: String,
     val isExpense: Boolean,
@@ -21,19 +21,19 @@ data class TransactionItem(
 )
 
 val transactions = listOf(
-    TransactionItem("Online Class", "19/05/2025", "Rp 999.99,-", true, Icons.Default.School),
-    TransactionItem("Investment", "19/05/2025", "Rp 999.99,-", false, Icons.Default.BarChart),
-    TransactionItem("Salary", "19/05/2025", "Rp 999.99,-", true, Icons.Default.AttachMoney),
-    TransactionItem("Skincare", "19/05/2025", "Rp 999.99,-", true, Icons.Default.HealthAndSafety),
-    TransactionItem("Lunch", "19/05/2025", "Rp 999.99,-", true, Icons.Default.LunchDining),
-    TransactionItem("House Rent", "19/05/2025", "Rp 999.99,-", false, Icons.Default.House),
-    TransactionItem("Shopping", "19/05/2025", "Rp 999.99,-", true, Icons.Default.ShoppingBag),
-    TransactionItem("Bus Ticket", "19/05/2025", "Rp 999.99,-", true, Icons.Default.DirectionsBus),
-    TransactionItem("Online Class", "19/05/2025", "Rp 999.99,-", true, Icons.Default.School),
-    TransactionItem("Investment", "19/05/2025", "Rp 999.99,-", false, Icons.Default.BarChart),
-    TransactionItem("Salary", "19/05/2025", "Rp 999.99,-", true, Icons.Default.AttachMoney),
-    TransactionItem("Skincare", "19/05/2025", "Rp 999.99,-", true, Icons.Default.HealthAndSafety),
-    TransactionItem("Lunch", "19/05/2025", "Rp 999.99,-", true, Icons.Default.LunchDining),
-    TransactionItem("House Rent", "19/05/2025", "Rp 999.99,-", false, Icons.Default.House),
+    TransactionItem("Online Class", "Education", "19/05/2025", "Rp 999.99,-", true, Icons.Default.School),
+    TransactionItem("Investment", "Investment", "19/05/2025", "Rp 999.99,-", false, Icons.Default.BarChart),
+    TransactionItem("Salary", "Salary", "19/05/2025", "Rp 999.99,-", true, Icons.Default.AttachMoney),
+    TransactionItem("Skincare", "Healthcare", "19/05/2025", "Rp 999.99,-", true, Icons.Default.HealthAndSafety),
+    TransactionItem("Lunch", "Food", "19/05/2025", "Rp 999.99,-", true, Icons.Default.LunchDining),
+    TransactionItem("House Rent", "Bill", "19/05/2025", "Rp 999.99,-", false, Icons.Default.House),
+    TransactionItem("Shopping", "Shopping", "19/05/2025", "Rp 999.99,-", true, Icons.Default.ShoppingBag),
+    TransactionItem("Bus Ticket", "Transport", "19/05/2025", "Rp 999.99,-", true, Icons.Default.DirectionsBus),
+    TransactionItem("Online Class", "Education", "19/05/2025", "Rp 999.99,-", true, Icons.Default.School),
+    TransactionItem("Investment", "Investment", "19/05/2025", "Rp 999.99,-", false, Icons.Default.BarChart),
+    TransactionItem("Salary", "Salary", "19/05/2025", "Rp 999.99,-", true, Icons.Default.AttachMoney),
+    TransactionItem("Skincare", "Healthcare", "19/05/2025", "Rp 999.99,-", true, Icons.Default.HealthAndSafety),
+    TransactionItem("Lunch", "Food", "19/05/2025", "Rp 999.99,-", true, Icons.Default.LunchDining),
+    TransactionItem("House Rent", "Bill", "19/05/2025", "Rp 999.99,-", false, Icons.Default.House),
 )
 
