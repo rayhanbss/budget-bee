@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.budgetbee.R
+import com.example.budgetbee.ui.theme.White
 import kotlin.collections.listOf
 
 data class TransactionItem (
@@ -43,45 +44,53 @@ data class TransactionItem (
 @Composable
 fun getTransactionItems() : List<TransactionItem> {
     return listOf(
-    TransactionItem("Online Class", "19/05/2025", "Rp 999.99,-", true, (painterResource(R.drawable.book))),
-    TransactionItem("Invesment", "19/05/2025", "Rp 999.99,-", false, painterResource(R.drawable.finance)),
-    TransactionItem("Salary", "19/05/2025", "Rp 999.99,-", true, painterResource(R.drawable.local_atm)),
-    TransactionItem("Skincare", "19/05/2025", "Rp 999.99,-", true, painterResource(R.drawable.ecg_heart)),
-    TransactionItem("Lunch", "19/05/2025", "Rp 999.99,-", true, painterResource(R.drawable.lunch_dining)),
-    TransactionItem("House Rent", "19/05/2025", "Rp 999.99,-", false, painterResource(R.drawable.receipt)),
-    TransactionItem("Shopping", "19/05/2025", "Rp 999.99,-", true, painterResource(R.drawable.shopping_bag)),
-    TransactionItem("Bus Ticket", "19/05/2025", "Rp 999.99,-", true, painterResource(R.drawable.directions_car))
+        TransactionItem("Online Class", "19/05/2025", "Rp 999.99,-", true, (painterResource(R.drawable.book))),
+        TransactionItem("Invesment", "19/05/2025", "Rp 999.99,-", false, painterResource(R.drawable.finance)),
+        TransactionItem("Salary", "19/05/2025", "Rp 999.99,-", false, painterResource(R.drawable.local_atm)),
+        TransactionItem("Skincare", "19/05/2025", "Rp 999.99,-", true, painterResource(R.drawable.ecg_heart)),
+        TransactionItem("Lunch", "19/05/2025", "Rp 999.99,-", true, painterResource(R.drawable.lunch_dining)),
+        TransactionItem("House Rent", "19/05/2025", "Rp 999.99,-", true, painterResource(R.drawable.receipt)),
+        TransactionItem("Shopping", "19/05/2025", "Rp 999.99,-", true, painterResource(R.drawable.shopping_bag)),
+        TransactionItem("Bus Ticket", "19/05/2025", "Rp 999.99,-", true, painterResource(R.drawable.directions_car))
     )
 }
 
 @Composable
 fun TransactionItemView(item: TransactionItem) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 4.dp),
         shape = RoundedCornerShape(4.dp),
+        colors = CardDefaults.cardColors(containerColor = White),
         border = BorderStroke(1.dp, Color(0xFFFECD40)),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
-            modifier = Modifier.padding(6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(28.dp),
                 painter = item.icon,
                 contentDescription = item.title,
                 tint = Color(0xFFFECD40)
             )
 
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = item.title, fontWeight = FontWeight.Normal, fontSize = 12.sp)
-                Text(text = item.date, fontWeight = FontWeight.Normal, fontSize = 8.sp)
+                Text(text = item.title, fontWeight = FontWeight.Medium, fontSize = 14.sp)
+                Text(text = item.date, fontWeight = FontWeight.Normal, fontSize = 10.sp)
             }
 
-            Text(text = item.amount, fontWeight = FontWeight.Medium, fontSize = 12.sp)
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(text = item.amount, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+
+            Spacer(modifier = Modifier.width(8.dp))
 
             Icon(
                 imageVector = if (item.isExpense) Icons.Default.ArrowOutward else Icons.AutoMirrored.Filled.CallReceived,
@@ -94,16 +103,30 @@ fun TransactionItemView(item: TransactionItem) {
 }
 
 @Composable
-fun TransactionScreen(transactions: List<TransactionItem>) {
-    LazyColumn {
+fun TransactionList(
+    transactions: List<TransactionItem>,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier
+    ) {
         items(transactions) { item ->
             TransactionItemView(item)
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun TransactionScreenPreview() {
-    TransactionScreen(getTransactionItems())
+fun TransactionListPreview() {
+    TransactionList(
+        transactions = getTransactionItems(),
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TransactionItemPreview() {
+    TransactionItemView(item = getTransactionItems()[0])
 }

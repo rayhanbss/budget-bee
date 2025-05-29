@@ -24,7 +24,7 @@ import com.example.budgetbee.ui.screen.auth.RegisterScreen
 import com.example.budgetbee.ui.screen.main.DashboardScreen
 import com.example.budgetbee.ui.screen.main.ProfileScreen
 import com.example.budgetbee.ui.screen.main.TargetScreen
-import com.example.budgetbee.ui.screen.main.TransactionScreen
+import com.example.budgetbee.ui.screen.main.TransactionPage
 import com.example.budgetbee.ui.theme.*
 
 class MainActivity : ComponentActivity() {
@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
                             startDestination = "login"
                         ) {
                             composable("dashboard") { DashboardScreen() }
-                            composable("transaction") { TransactionScreen() }
+                            composable("transaction") { TransactionPage(navController = navController) }
                             composable("target") { TargetScreen() }
                             composable("profile") { ProfileScreen() }
                             composable("login") { LoginScreen(navController) }
