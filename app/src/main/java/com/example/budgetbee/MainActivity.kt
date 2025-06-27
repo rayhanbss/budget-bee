@@ -1,6 +1,7 @@
 package com.example.budgetbee
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Window
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,30 +10,89 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.budgetbee.data.repository.AuthRepository
+import com.example.budgetbee.data.repository.CategoryRepository
+import com.example.budgetbee.data.repository.TokenRepository
+import com.example.budgetbee.data.repository.UserRepository
 import com.example.budgetbee.ui.component.NavBar
-import com.example.budgetbee.ui.component.RegisterScreen
 import com.example.budgetbee.ui.screen.auth.*
 import com.example.budgetbee.ui.screen.main.*
 import com.example.budgetbee.ui.theme.*
+import com.example.budgetbee.viewmodel.AuthViewModel
+import com.example.budgetbee.viewmodel.AuthViewModelFactory
+import com.example.budgetbee.viewmodel.UserViewModel
+import com.example.budgetbee.viewmodel.UserViewModelFactory
+import kotlin.toString
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
+        val isCheckingAuth = mutableStateOf(true)
+        splashScreen.setKeepOnScreenCondition { isCheckingAuth.value }
         setContent {
             BudgetBeeTheme {
+                val context = LocalContext.current.applicationContext
+
+                // Initialize repositories
+                val tokenRepository = remember { TokenRepository(context) }
+                val userRepository = remember { UserRepository(context) }
+                val categoryRepository = remember { CategoryRepository(context) }
+                val authRepository = remember { AuthRepository(context) }
+
+                // Initialize ViewModels with factories
+                val userFactory = remember { UserViewModelFactory(userRepository) }
+                val userViewModel: UserViewModel = viewModel(factory = userFactory)
+
+                val authFactory = remember { AuthViewModelFactory(authRepository,tokenRepository, categoryRepository,  userRepository) }
+                val authViewModel: AuthViewModel = viewModel(factory = authFactory)
+
+                // Collect token and user state
+                val tokenState by authViewModel.tokenState.collectAsState()
+                val tokenString = tokenState?.value
+                val userState = userViewModel.userState.collectAsState()
+                val user = userState.value
+                Log.i("MainActivity", "Token: $tokenString, User: $user")
+
+
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route ?: ""
+
+                val remoteSuccess = userViewModel.remoteSuccess.value
+
+//                 Only fetch user remote if not authenticated and not already on auth screens
+                LaunchedEffect(tokenString, user, remoteSuccess, currentRoute) {
+                    Log.i("MainActivity", "LaunchedEffect: token=$tokenString, user=$user, remoteSuccess=$remoteSuccess, route=$currentRoute")
+                    if (tokenString != null && user?.id != null && !remoteSuccess) {
+                        userViewModel.getUserRemote(user.id.toString(), tokenString)
+                    } else if ((tokenString == null || user == null) &&
+                        currentRoute !in listOf("login", "register", "launch", "forgot")
+                    ) {
+                        Log.e("MainActivity", "Token or user state is null, Token: $tokenString, User: $user")
+                        navController.navigate("launch")
+                    } else if (remoteSuccess && tokenString != null && user != null && currentRoute == "launch") {
+                        Log.i("MainActivity", "User remote fetched successfully, navigating to dashboard")
+                        navController.navigate("dashboard")
+                    }
+                    kotlinx.coroutines.delay(1300)
+                    isCheckingAuth.value = false
+                }
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
@@ -49,14 +109,14 @@ class MainActivity : ComponentActivity() {
                     ) {
                         NavHost(
                             navController = navController,
-                            startDestination = "launch"
+                            startDestination = "dashboard"
                         ) {
-                            composable("dashboard") { DashboardScreen() }
+                            composable("dashboard") { DashboardScreen(userViewModel) }
                             composable("transaction") { TransactionScreen() }
                             composable("target") { TargetScreen() }
-                            composable("profile") { ProfileScreen(navController) }
-                            composable("login") { LoginScreen(navController) }
-                            composable("register") { RegisterScreen(navController) }
+                            composable("profile") { ProfileScreen(context, navController, authViewModel, userViewModel) }
+                            composable("login") { LoginScreen(navController, authViewModel) }
+                            composable("register") { RegisterScreen(navController, authViewModel) }
                             composable("launch") { LaunchPage(navController)}
                             composable("forgot") { ForgotPasswordScreen(navController) }
                         }

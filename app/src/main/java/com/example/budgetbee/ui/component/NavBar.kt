@@ -4,6 +4,7 @@ import com.example.budgetbee.R.drawable.*
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.filled.*
@@ -12,7 +13,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -33,7 +37,8 @@ fun NavBar(
             modifier = Modifier
                 .fillMaxSize()
                 .align(Alignment.Center)
-                .background(YellowTertiary)
+                .shadow(elevation = 8.dp, shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
+                .background(White)
                 .padding(24.dp, 0.dp, 24.dp, 24.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
@@ -109,4 +114,13 @@ fun NavBar(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun NavBarPreview() {
+    NavBar(
+        navController = NavController(LocalContext.current),
+        currentRoute = "dashboard"
+    )
 }

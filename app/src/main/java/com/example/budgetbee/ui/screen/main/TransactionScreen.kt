@@ -48,7 +48,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.budgetbee.R
-import com.example.budgetbee.data.model.transactions
 import com.example.budgetbee.ui.component.TransactionRow
 import com.example.budgetbee.ui.theme.Black
 import com.example.budgetbee.ui.theme.White
@@ -68,15 +67,15 @@ fun TransactionScreen() {
     var transactionTypeExpanded by remember { mutableStateOf(false) }
     val transactionTypes = listOf("Income", "Expense")
 
-    val filteredTransactions = transactions.filter { item ->
-        val matchesQuery = searchQuery.isBlank() || item.title.contains(searchQuery, ignoreCase = true)
-        val matchesCategory = selectedCategory == "Category" || item.category == selectedCategory
-        val matchesType = selectedTransactionType == "Transaction Type" ||
-                (selectedTransactionType == "Income" && !item.isExpense) ||
-                (selectedTransactionType == "Expense" && item.isExpense)
-
-        matchesQuery && matchesCategory && matchesType
-    }
+//    val filteredTransactions = transactions.filter { item ->
+//        val matchesQuery = searchQuery.isBlank() || item.title.contains(searchQuery, ignoreCase = true)
+//        val matchesCategory = selectedCategory == "Category" || item.category == selectedCategory
+//        val matchesType = selectedTransactionType == "Transaction Type" ||
+//                (selectedTransactionType == "Income" && !item.isExpense) ||
+//                (selectedTransactionType == "Expense" && item.isExpense)
+//
+//        matchesQuery && matchesCategory && matchesType
+//    }
 
 
     Column(
@@ -250,9 +249,9 @@ fun TransactionScreen() {
             }
         }
         LazyColumn {
-            items(filteredTransactions) { item ->
-                TransactionRow(item = item)
-            }
+//            items(filteredTransactions) { item ->
+//                TransactionRow(item = item)
+//            }
         }
     }
 }

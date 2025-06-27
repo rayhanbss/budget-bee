@@ -1,3 +1,7 @@
 package com.example.budgetbee.data.model
 
-data class Token()
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class Token(val value: String)
+

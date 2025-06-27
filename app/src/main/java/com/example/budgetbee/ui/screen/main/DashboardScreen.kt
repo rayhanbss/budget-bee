@@ -1,12 +1,11 @@
 package com.example.budgetbee.ui.screen.main
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowOutward
@@ -23,23 +21,19 @@ import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.budgetbee.R
 import com.example.budgetbee.data.model.allTargets
-import com.example.budgetbee.data.model.transactions
+import com.example.budgetbee.data.repository.UserRepository
 import com.example.budgetbee.ui.component.CompactTargetCard
 import com.example.budgetbee.ui.component.TransactionRow
 import com.example.budgetbee.ui.theme.Black
@@ -47,11 +41,15 @@ import com.example.budgetbee.ui.theme.Failed
 import com.example.budgetbee.ui.theme.Success
 import com.example.budgetbee.ui.theme.White
 import com.example.budgetbee.ui.theme.YellowPrimary
-import com.example.budgetbee.ui.theme.YellowTertiary
+import com.example.budgetbee.viewmodel.UserViewModel
+import com.example.budgetbee.viewmodel.UserViewModelFactory
 
 @Composable
-fun DashboardScreen(modifier: Modifier = Modifier){
-    val username = "Username"
+fun DashboardScreen(
+    userViewModel: UserViewModel
+) {
+    val userState = userViewModel.userState.collectAsState()
+    val user = userState.value
     val accountBalance = 999999.00
     val income = 1000000.00
     val expense = 100000.00
@@ -70,50 +68,55 @@ fun DashboardScreen(modifier: Modifier = Modifier){
                 Box(modifier = Modifier
                     .fillMaxWidth()
                     .background(White)
-                    .drawBehind {
-                        drawRoundRect(
-                            color = YellowTertiary,
-                            topLeft = Offset(0f, 0f),
-                            size = Size(size.width, 600f),
-                        )
-                    }
                 ) {
-                    Image(
-                        painter = painterResource(R.drawable.header),
-                        contentDescription = "Header",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 200.dp),
-                        contentScale = ContentScale.Crop
-                    )
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(32.dp),
+                            .padding(start = 16.dp, end = 16.dp, top = 24.dp)
+                            .shadow((4.dp), shape = RoundedCornerShape(8.dp))
+                            .background(White),
                         horizontalAlignment = Alignment.Start,
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ){
-                        Text(
-                            text = "Hello, $username!",
-                            color = YellowPrimary,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Hello, ",
+                                color = Black,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                            Text(
+                                text = "${user?.name ?: "User"}!",
+                                color = YellowPrimary,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+
+                        }
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(12.dp))
+                                .padding(start = 16.dp, end = 16.dp)
+                                .shadow(
+                                    elevation = (4.dp),
+                                    shape = RoundedCornerShape(8.dp))
                                 .background(YellowPrimary),
                             horizontalAlignment = Alignment.Start,
                             verticalArrangement = Arrangement.Center
                         ){
                             Text(
                                 text = "Account Balance",
-                                color = White,
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold,
+                                color = Black,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
                                 modifier = Modifier
-                                    .padding(16.dp, 12.dp, 16.dp, 4.dp)
+                                    .padding(18.dp, 12.dp, 18.dp, 0.dp)
                             )
                             Text(
                                 text = "Rp. $accountBalance",
@@ -121,12 +124,14 @@ fun DashboardScreen(modifier: Modifier = Modifier){
                                 fontSize = 36.sp,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier
-                                    .padding(16.dp, 4.dp, 16.dp, 12.dp)
+                                    .padding(18.dp, 0.dp, 18.dp, 12.dp)
+
                             )
                         }
                         Row(
                             modifier = Modifier
-                                .fillMaxWidth(),
+                                .fillMaxWidth()
+                                .padding(16.dp, 0.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ){
@@ -134,11 +139,8 @@ fun DashboardScreen(modifier: Modifier = Modifier){
                                 modifier = Modifier
                                     .height(64.dp)
                                     .weight(1f)
-                                    .border(
-                                        width = 2.dp,
-                                        color = YellowPrimary,
-                                        shape = RoundedCornerShape(12.dp)
-                                    ),
+                                    .shadow((4.dp), shape = RoundedCornerShape(8.dp))
+                                    .background(White),
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ){
@@ -171,11 +173,8 @@ fun DashboardScreen(modifier: Modifier = Modifier){
                                 modifier = Modifier
                                     .height(64.dp)
                                     .weight(1f)
-                                    .border(
-                                        width = 2.dp,
-                                        color = YellowPrimary,
-                                        shape = RoundedCornerShape(12.dp)
-                                    ),
+                                    .shadow((4.dp), shape = RoundedCornerShape(8.dp))
+                                    .background(White),
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ){
@@ -207,7 +206,7 @@ fun DashboardScreen(modifier: Modifier = Modifier){
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(4.dp, 0.dp),
+                                .padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ){
@@ -229,76 +228,123 @@ fun DashboardScreen(modifier: Modifier = Modifier){
             }
         }
 
-        // Goal
-        item{
-            Row(
+        item{Spacer(modifier = Modifier.height(12.dp))}
+
+        item {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(32.dp, 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Icon(
-                    imageVector = Icons.Default.BookmarkBorder,
-                    contentDescription = "Goal Icon",
-                    tint = YellowPrimary,
+                    .padding(16.dp, 8.dp)
+                    .shadow(4.dp, shape = RoundedCornerShape(8.dp))
+                    .background(White)
+                    .padding(bottom = 16.dp)
+            ) {
+                Row(
                     modifier = Modifier
-                        .size(24.dp)
-                )
-                Text(
-                    text = "Goal",
-                    color = YellowPrimary,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.BookmarkBorder,
+                        contentDescription = "Goal Icon",
+                        tint = YellowPrimary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "My ",
+                        color = Black,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Targets",
+                        color = YellowPrimary,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                // Use a Column instead of LazyColumn for previews and better Compose preview support
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    allTargets.take(3).forEach { item ->
+                        CompactTargetCard(
+                            target = item,
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
+                                .fillMaxWidth(),
+                            onClick = { }
+                        )
+                    }
+                }
             }
         }
 
-        items(allTargets.take(3)) { item ->
-            CompactTargetCard(
-                target = item,
-                modifier = Modifier
-                    .padding(32.dp, 4.dp)
-                    .fillMaxWidth(),
-                onClick = { TODO() }
-            )
-        }
-
+        item{Spacer(modifier = Modifier.height(12.dp))}
         // Recent Transaction
-        item{
-            Row(
+        item {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(32.dp, 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Icon(
-                    imageVector = Icons.Outlined.AccountBalanceWallet,
-                    contentDescription = "Transaction Icon",
-                    tint = YellowPrimary,
+                    .padding(16.dp, 8.dp)
+                    .shadow(2.dp, shape = RoundedCornerShape(8.dp))
+                    .background(White)
+                    .padding(bottom = 16.dp)
+            ) {
+                Row(
                     modifier = Modifier
-                        .size(24.dp)
-                )
-                Text(
-                    text = "Recent Transaction",
-                    color = YellowPrimary,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.AccountBalanceWallet,
+                        contentDescription = "Transaction Icon",
+                        tint = YellowPrimary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Recent ",
+                        color = Black,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Transactions",
+                        color = YellowPrimary,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+//                    transactions.take(5).forEach { item ->
+//                        TransactionRow(
+//                            item = item
+//                        )
+//                    }
+                }
             }
         }
 
-        items(transactions.take(5)) { item ->
-            TransactionRow(
-                item = item
-            )
-        }
     }
 }
 
-@Preview
-@Composable
-fun DashboardScreenPreview() {
-    DashboardScreen()
-}
+//@Preview
+//@Composable
+//fun DashboardScreenPreview() {
+//    DashboardScreen()
+//}
+

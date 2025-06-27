@@ -1,4 +1,6 @@
 package com.example.budgetbee.data.request
 
-class CategorRequest {
-}
+data class CategorRequest (
+    val name: String,
+    val isExpense: Boolean,
+)

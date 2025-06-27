@@ -1,6 +1,7 @@
 package com.example.budgetbee.ui.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,26 +20,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.budgetbee.data.model.TransactionItem
+import com.example.budgetbee.data.model.Transaction
 import com.example.budgetbee.ui.theme.Black
 import com.example.budgetbee.ui.theme.Failed
 import com.example.budgetbee.ui.theme.Success
+import com.example.budgetbee.ui.theme.White
 import com.example.budgetbee.ui.theme.YellowPrimary
 import com.example.budgetbee.ui.theme.YellowTertiary
 
 @Composable
-fun TransactionRow(modifier: Modifier = Modifier, item: TransactionItem) {
+fun TransactionRow(modifier: Modifier = Modifier, item: Transaction) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(32.dp, 4.dp),
+            .fillMaxWidth().
+            pointerInput(Unit) {
+                detectTapGestures(
+                    onLongPress = {
+                        // TODO: Do something on hold
+                    }
+                )
+            },
         shape = RoundedCornerShape(4.dp),
-        border = BorderStroke(1.dp, YellowPrimary),
-        colors = CardDefaults.cardColors(containerColor = YellowTertiary)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = White)
     ) {
         Row(
             modifier = Modifier
@@ -54,19 +63,19 @@ fun TransactionRow(modifier: Modifier = Modifier, item: TransactionItem) {
             ) {
                 Icon(
                     modifier = Modifier.size(36.dp),
-                    imageVector = item.icon,
-                    contentDescription = item.title,
+                    imageVector = Icons.Default.LunchDining,
+                    contentDescription = item.name,
                     tint = YellowPrimary
                 )
                 Column{
                     Text(
-                        text = item.title,
+                        text = item.name,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
                         color = Black
                         )
                     Text(
-                        text = item.date,
+                        text = item.dateTransaction,
                         fontWeight = FontWeight.Normal,
                         fontSize = 12.sp,
                         color = Black
@@ -80,17 +89,17 @@ fun TransactionRow(modifier: Modifier = Modifier, item: TransactionItem) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ){
                 Text(
-                    text = item.amount,
+                    text = item.amount.toString(),
                     fontWeight = FontWeight.Medium,
                     fontSize = 16.sp,
                     color = Black
                 )
-                Icon(
-                    imageVector = Icons.Default.ArrowOutward,
-                    contentDescription = if (item.isExpense) "Expense" else "Income",
-                    tint = if (item.isExpense) Failed else Success,
-                    modifier = if (item.isExpense) Modifier.size(32.dp) else Modifier.size(32.dp).rotate(180f)
-                )
+//                Icon(
+//                    imageVector = Icons.Default.ArrowOutward,
+//                    contentDescription = if (item.isExpense) "Expense" else "Income",
+//                    tint = if (item.isExpense) Failed else Success,
+//                    modifier = if (item.isExpense) Modifier.size(32.dp) else Modifier.size(32.dp).rotate(180f)
+//                )
             }
         }
     }
@@ -99,13 +108,21 @@ fun TransactionRow(modifier: Modifier = Modifier, item: TransactionItem) {
 @Preview
 @Composable
 fun TransactionRowPreview() {
-    val sampleItem = TransactionItem(
-        title = "Lunch",
-        category = "Food",
-        date = "19/05/2025",
-        amount = "Rp 999.99,-",
-        isExpense = false,
-        icon = Icons.Default.LunchDining
+    TransactionRow(
+        item = Transaction(
+            id = "1",
+            name = "Groceries",
+            categoryId = "2",
+            isSaving = false,
+            dateTransaction = "2024-06-01",
+            amount = 50.0,
+            note = "Weekly groceries",
+            targetId = null,
+            userId = "1",
+            image = null,
+            categoryName = "test",
+            categoryIsExpense = true,
+            targetName = "test"
+        )
     )
-    TransactionRow(item = sampleItem)
 }

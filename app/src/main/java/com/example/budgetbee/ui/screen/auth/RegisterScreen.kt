@@ -1,264 +1,258 @@
-package com.example.budgetbee.ui.component
+package com.example.budgetbee.ui.screen.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip // Import untuk Modifier.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration // Import untuk mendapatkan dimensi layar
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import com.example.budgetbee.ui.theme.Grey
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.budgetbee.data.repository.AuthRepository
+import com.example.budgetbee.data.repository.CategoryRepository
+import com.example.budgetbee.data.repository.TokenRepository
+import com.example.budgetbee.data.repository.UserRepository
+import com.example.budgetbee.ui.theme.Black
+import com.example.budgetbee.ui.theme.White
 import com.example.budgetbee.ui.theme.YellowPrimary
-import com.example.budgetbee.ui.theme.YellowTertiary
-import java.util.Calendar
+import com.example.budgetbee.viewmodel.AuthViewModel
+import com.example.budgetbee.viewmodel.AuthViewModelFactory
 
-val BlackButton = Color.Black
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(navController: NavController) {
+fun RegisterScreen(
+    navController: NavController,
+    authViewModel: AuthViewModel,
+) {
+    val registerResult by authViewModel.loginResult.collectAsState()
+
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    var mobileNumber by remember { mutableStateOf("") }
-    var dateOfBirth by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var showPassword by remember { mutableStateOf(false) }
     var confirmPassword by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    var confirmPasswordVisible by remember { mutableStateOf(false) }
+    var confirmShowPassword by remember { mutableStateOf(false) }
+    var rememberMe by remember { mutableStateOf(false) }
 
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp.dp
-
-    val headerBaseHeightPercentage = 0.2f
-    val headerVisibleHeight = screenHeight * headerBaseHeightPercentage
-    val cornerRadius = 32.dp
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(headerVisibleHeight + cornerRadius)
-                .background(YellowPrimary)
-                .align(Alignment.TopCenter)
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(headerVisibleHeight)
-                    .align(Alignment.TopCenter),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Create Account",
-                    fontSize = 36.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-            }
-        }
-
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(White)
+    ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = headerVisibleHeight)
-                .clip(RoundedCornerShape(topStart = cornerRadius, topEnd = cornerRadius))
-                .background(YellowTertiary)
-                .padding(horizontal = 24.dp, vertical = 24.dp)
-                .verticalScroll(rememberScrollState()),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.Center
         ) {
-            val textFieldColors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                disabledContainerColor = Color.White,
-                cursorColor = Grey,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent,
-                focusedLabelColor = Grey,
-                unfocusedLabelColor = Grey,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
-            )
-            val textFieldShape = RoundedCornerShape(16.dp)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                Text(
+                    text = "BudgetBee",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Black
+                )
+                Row {
+                    Text(
+                        text = "Create",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Black
+                    )
+                    Text(
+                        text = " Account!",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = YellowPrimary
+                    )
+                }
+            }
 
-            TextField(
-                value = fullName,
-                onValueChange = { fullName = it },
-                label = { Text("Full Name") },
-                placeholder = { Text("example@example.com") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = textFieldColors,
-                shape = textFieldShape,
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
-            )
-            TextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
-                placeholder = { Text("example@example.com") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = textFieldColors,
-                shape = textFieldShape,
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
-            )
-            TextField(
-                value = mobileNumber,
-                onValueChange = { mobileNumber = it },
-                label = { Text("Mobile Number") },
-                placeholder = { Text("+62 812 3456XXXX") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = textFieldColors,
-                shape = textFieldShape,
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
-            )
-
-            TextField(
-                value = dateOfBirth,
-                onValueChange = { dateOfBirth = it },
-                label = { Text("Date Of Birth") },
-                placeholder = { Text("DD / MM / YYY") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = textFieldColors,
-                shape = textFieldShape,
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
-            )
-
-            TextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                placeholder = { Text("●●●●●●●●") },
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                trailingIcon = {
-                    val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                    val description = if (passwordVisible) "Hide password" else "Show password"
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(imageVector = image, contentDescription = description, tint = Grey)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = textFieldColors,
-                shape = textFieldShape,
-                singleLine = true
-            )
-            TextField(
-                value = confirmPassword,
-                onValueChange = { confirmPassword = it },
-                label = { Text("Confirm Password") },
-                placeholder = { Text("●●●●●●●●") },
-                visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                trailingIcon = {
-                    val image = if (confirmPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                    val description = if (confirmPasswordVisible) "Hide password" else "Show password"
-                    IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
-                        Icon(imageVector = image, contentDescription = description, tint = Grey)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = textFieldColors,
-                shape = textFieldShape,
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "By continuing, you agree to\nTerms of Use and Privacy Policy.",
-                fontSize = 12.sp,
-                color = Grey,
-                textAlign = TextAlign.Center,
-                lineHeight = 16.sp
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {navController.navigate("login")},
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(25.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = BlackButton,
-                    contentColor = Color.White
-                )
+                    .background(White)
+                    .padding(horizontal = 24.dp, vertical = 24.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Sign Up", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    "Already have an account? ",
-                    fontSize = 14.sp,
-                    color = Grey
+                // Full name Field
+                OutlinedTextField(
+                    label = { Text("Full Name", color = Black) },
+                    value = fullName,
+                    onValueChange = { fullName = it },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
                 )
+                Spacer(modifier = Modifier.height(16.dp))
+                // Email Field
+                OutlinedTextField(
+                    label = { Text("Email", color = Black) },
+                    value = email,
+                    onValueChange = { email = it },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                // Password Field
+                OutlinedTextField(
+                    label = { Text("Password", color = Black) },
+                    value = password,
+                    onValueChange = { password = it },
+                    singleLine = true,
+                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        val image = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                        IconButton(onClick = { showPassword = !showPassword }) {
+                            Icon(imageVector = image, contentDescription = null)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                // Password Field
+                OutlinedTextField(
+                    label = { Text("Confirm Password", color = Black) },
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    singleLine = true,
+                    visualTransformation = if (confirmShowPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        val image = if (confirmShowPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                        IconButton(onClick = { confirmShowPassword = !confirmShowPassword }) {
+                            Icon(imageVector = image, contentDescription = null)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Log in",
+                    text = if (password.isNotEmpty() && confirmPassword.isNotEmpty() && password != confirmPassword) "Passwords do not match" else "",
+                    color = Color.Red,
+                    fontSize = 12.sp
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = rememberMe,
+                        onCheckedChange = { rememberMe = it },
+                        colors = CheckboxDefaults.colors(checkedColor = YellowPrimary),
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Text(
+                        text = "Remember Me",
+                        fontSize = 16.sp,
+                        color = Black,
+                        modifier = Modifier
+                            .clickable { rememberMe = !rememberMe }
+                            .padding(start = 8.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "By registering, you agree to our Terms of Service and Privacy Policy.",
                     fontSize = 12.sp,
-                    color = Color.Blue,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable { navController.navigate("login") }
+                    color = Black,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+
                 )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = { authViewModel.register(fullName, email, password, rememberMe) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = YellowPrimary)
+                ) {
+                    Text(
+                        text = "Register",
+                        fontWeight = FontWeight.SemiBold,
+                        color = White
+                    )
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Already have an account? ",
+                        color = Black,
+                        fontSize = 12.sp
+                    )
+                    Text(
+                        text = "Log In",
+                        color = Color.Blue,
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                            .padding(start = 4.dp)
+                            .clickable {
+                                navController.navigate("login")
+                            }
+                    )
+                }
+
+                registerResult?.exceptionOrNull()?.message?.let { errorMsg ->
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = errorMsg, color = Color.Red)
+                }
+
+
+                // Navigate on successful login
+                if (registerResult?.isSuccess == true) {
+                    LaunchedEffect(Unit) {
+                        navController.navigate("dashboard")
+                    }
+                }
             }
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
+
+//@Preview
+//@Composable
+//fun RegisterScreenPreview() {
+//    RegisterScreen(navController = NavController(LocalContext.current))
+//}

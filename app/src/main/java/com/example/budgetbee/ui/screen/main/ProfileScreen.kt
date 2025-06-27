@@ -1,152 +1,216 @@
 package com.example.budgetbee.ui.screen.main
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.SupportAgent
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.budgetbee.R
+import com.example.budgetbee.data.repository.AuthRepository
+import com.example.budgetbee.data.repository.TokenRepository
+import com.example.budgetbee.data.repository.UserRepository
+import com.example.budgetbee.ui.theme.Black
 import com.example.budgetbee.ui.theme.White
 import com.example.budgetbee.ui.theme.YellowPrimary
-import com.example.budgetbee.ui.theme.YellowTertiary
+import com.example.budgetbee.viewmodel.AuthViewModel
+import com.example.budgetbee.viewmodel.AuthViewModelFactory
+import com.example.budgetbee.viewmodel.UserViewModel
+import com.example.budgetbee.viewmodel.UserViewModelFactory
+import androidx.core.net.toUri
+import com.example.budgetbee.data.repository.CategoryRepository
 
 @Composable
-fun ProfileScreen(navController: NavController) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        // Background krem pastel paling bawah
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp)
-                .background(YellowPrimary)
-        ) {
+fun ProfileScreen(
+    context: Context,
+    navController: NavController,
+    authViewModel: AuthViewModel,
+    userViewModel: UserViewModel
+) {
+    val userState= userViewModel.userState.collectAsState()
+    val user = userState.value
 
-            Text(
-                text = "Profile",
-                fontSize = 38.sp,
-                fontWeight = FontWeight.Bold,
-                color = White,
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 48.dp)
-            )
-        }
+    val logoutSuccess = authViewModel.logoutSuccess.collectAsState()
 
-        // Container putih melengkung di bawah background krem
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .align(Alignment.TopCenter)
-                .offset(y = 180.dp)
-                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                .background(Color.White)
-                .padding(top = 160.dp, start = 32.dp, end = 32.dp)
-        ) {
-            // Menu item profile
-            ProfileMenuItem(icon = R.drawable.ic_edit, label = "Edit Profile", bgColor = Color(0xFFF5E6AA))
-            ProfileMenuItem(icon = R.drawable.ic_security, label = "Security", bgColor = Color(0xFFFAD23D))
-            ProfileMenuItem(icon = R.drawable.ic_setting, label = "Setting", bgColor = Color(0xFFFFB940))
-            ProfileMenuItem(icon = R.drawable.ic_help, label = "Help", bgColor = Color(0xFFF5E6AA))
-            ProfileMenuItem(
-                icon = R.drawable.ic_logout,
-                label = "Logout",
-                bgColor = Color(0xFFFAD23D),
-                onClick = {navController.navigate("launch")
-            })
-        }
-
-        // Foto profil di layer paling atas supaya overlap rapi dengan background
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 130.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.profile_photo),
-                contentDescription = "Profile Picture",
-                modifier = Modifier
-                    .size(130.dp)
-                    .clip(CircleShape)
-                    .border(3.dp, Color.White, CircleShape)
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = "John Smith",
-                fontWeight = FontWeight.Bold,
-                fontSize = 22.sp,
-                color = Color(0xFF1B2B29)
-            )
-
-            Text(
-                text = "ID: 25030024",
-                fontWeight = FontWeight.Medium,
-                fontSize = 16.sp,
-                color = Color.Gray
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
+    LaunchedEffect(logoutSuccess.value) {
+        if (logoutSuccess.value) {
+            navController.navigate("launch")
         }
     }
-}
 
-
-@Composable
-fun ProfileMenuItem(icon: Int, label: String, bgColor: Color, onClick: () -> Unit = {}) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 14.dp)
-            .clickable { onClick() }
-    ) {
-        Box(
-            modifier = Modifier
-                .size(50.dp) // sedikit lebih besar
-                .background(bgColor, shape = CircleShape),
-            contentAlignment = Alignment.Center
+            .fillMaxSize()
+            .background(White),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(id = icon),
-                contentDescription = label,
-                modifier = Modifier.size(50.dp)
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .shadow(2.dp, shape = RoundedCornerShape(12.dp))
+                .background(White)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp, 24.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "User",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Black
                 )
+                Text(
+                    text = " Profile",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = YellowPrimary
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.profile_photo),
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .size(96.dp)
+                        .clip(CircleShape)
+                        .border(3.dp, YellowPrimary, CircleShape)
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = user?.name ?: "User",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp,
+                    color = Color(0xFF1B2B29)
+                )
+
+                Text(
+                    text = user?.email ?: "Email Placeholder",
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp,
+                    color = Color.Gray
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+            }
         }
 
-        Spacer(modifier = Modifier.width(20.dp)) // jarak label lebih jauh dari ikon
-
-        Text(
-            text = label,
-            fontSize = 18.sp, // font lebih besar
-            fontWeight = FontWeight.Medium,
-            color = Color(0xFF1B2B29)
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .shadow(2.dp, shape = RoundedCornerShape(12.dp))
+                .background(White)
+        ) {
+            Button(
+                onClick = {
+                    val phoneNumber = "6288232815196"
+                    val intent = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        setPackage("com.whatsapp")
+                        putExtra(Intent.EXTRA_TEXT, "")
+                        putExtra("jid", "$phoneNumber@s.whatsapp.net")
+                    }
+                    context.startActivity(intent)},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp, 16.dp, 16.dp, 4.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = YellowPrimary,
+                    contentColor = White
+                ),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.SupportAgent,
+                    contentDescription = "Customer Service",
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Customer Service",
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Button(
+                onClick = {
+                    authViewModel.logout()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp, 4.dp, 16.dp, 16.dp),
+                shape = RoundedCornerShape(8.dp),
+                border = BorderStroke(2.dp, YellowPrimary),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = White,
+                    contentColor = YellowPrimary
+                ),
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Logout,
+                    contentDescription = "Log Out",
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Log Out",
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
     }
 }
 
-
-
-
-
-
+//@Preview
+//@Composable
+//fun ProfileScreenPreview() {
+//    ProfileScreen(navController = NavController(LocalContext.current))
+//}
 

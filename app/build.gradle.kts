@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
 }
 
 android {
@@ -55,6 +56,15 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.core.splashscreen)
     implementation (libs.material)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.runtime.livedata)
+    implementation (libs.androidx.datastore.preferences)
+    implementation(libs.jetbrains.kotlinx.serialization.json)
+//    implementation ("androidx.datastore:datastore-preferences-rxjava2:1.0.0")
+//    implementation ("androidx.datastore:datastore-preferences-rxjava3:1.0.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -63,3 +73,4 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
+
