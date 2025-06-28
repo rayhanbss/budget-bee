@@ -25,6 +25,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.budgetbee.data.repository.AuthRepository
 import com.example.budgetbee.data.repository.CategoryRepository
+import com.example.budgetbee.data.repository.TargetRepository
 import com.example.budgetbee.data.repository.TokenRepository
 import com.example.budgetbee.data.repository.TransactionRepository
 import com.example.budgetbee.data.repository.UserRepository
@@ -34,6 +35,8 @@ import com.example.budgetbee.ui.screen.main.*
 import com.example.budgetbee.ui.theme.*
 import com.example.budgetbee.viewmodel.AuthViewModel
 import com.example.budgetbee.viewmodel.AuthViewModelFactory
+import com.example.budgetbee.viewmodel.TargetViewModel
+import com.example.budgetbee.viewmodel.TargetViewModelFactory
 import com.example.budgetbee.viewmodel.TransactionViewModel
 import com.example.budgetbee.viewmodel.TransactionViewModelFactory
 import com.example.budgetbee.viewmodel.UserViewModel
@@ -57,6 +60,7 @@ class MainActivity : ComponentActivity() {
                 val categoryRepository = remember { CategoryRepository(context) }
                 val authRepository = remember { AuthRepository(context) }
                 val transactionRepository = remember { TransactionRepository(context) }
+                val targetRepository = remember { TargetRepository(context) }
 
                 // Initialize ViewModels with factories
                 val userFactory = remember { UserViewModelFactory(userRepository) }
@@ -74,6 +78,9 @@ class MainActivity : ComponentActivity() {
 
                 val transactionFactory = remember { TransactionViewModelFactory(transactionRepository) }
                 val transactionViewModel: TransactionViewModel = viewModel(factory = transactionFactory)
+
+                val targetFactory = remember { TargetViewModelFactory(targetRepository) }
+                val targetViewModel: TargetViewModel = viewModel(factory = targetFactory)
 
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -120,7 +127,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable("dashboard") { DashboardScreen(userViewModel) }
                             composable("transaction") { TransactionScreen(transactionViewModel, user, tokenString) }
-                            composable("target") { TargetScreen() }
+                            composable("target") { TargetScreen(targetViewModel, user, tokenString) }
                             composable("profile") { ProfileScreen(context, navController, authViewModel, userViewModel) }
                             composable("login") { LoginScreen(navController, authViewModel) }
                             composable("register") { RegisterScreen(navController, authViewModel) }
