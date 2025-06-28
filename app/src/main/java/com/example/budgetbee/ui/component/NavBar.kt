@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -24,8 +25,9 @@ import androidx.navigation.NavController
 @Composable
 fun NavBar(
     navController: NavController,
-    currentRoute: String
-    ){
+    currentRoute: String,
+    showBottomSheet: MutableState<Boolean>
+){
 
     Box(
         modifier = Modifier
@@ -70,7 +72,7 @@ fun NavBar(
                 )
             }
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { showBottomSheet.value = true },
                 modifier = Modifier.size(50.dp)
             ) {
                 Icon(
@@ -114,13 +116,4 @@ fun NavBar(
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun NavBarPreview() {
-    NavBar(
-        navController = NavController(LocalContext.current),
-        currentRoute = "dashboard"
-    )
 }

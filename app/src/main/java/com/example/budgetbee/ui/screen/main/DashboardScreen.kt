@@ -21,19 +21,17 @@ import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.budgetbee.data.model.allTargets
-import com.example.budgetbee.data.repository.UserRepository
 import com.example.budgetbee.ui.component.CompactTargetCard
 import com.example.budgetbee.ui.component.TransactionRow
 import com.example.budgetbee.ui.theme.Black
@@ -41,18 +39,27 @@ import com.example.budgetbee.ui.theme.Failed
 import com.example.budgetbee.ui.theme.Success
 import com.example.budgetbee.ui.theme.White
 import com.example.budgetbee.ui.theme.YellowPrimary
+import com.example.budgetbee.viewmodel.TransactionViewModel
 import com.example.budgetbee.viewmodel.UserViewModel
-import com.example.budgetbee.viewmodel.UserViewModelFactory
 
 @Composable
 fun DashboardScreen(
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    transactionViewModel: TransactionViewModel,
+    tokenString: String? = null,
+    navController: NavHostController
 ) {
     val userState = userViewModel.userState.collectAsState()
     val user = userState.value
     val accountBalance = 999999.00
     val income = 1000000.00
     val expense = 100000.00
+
+    LaunchedEffect(user, tokenString) {
+        transactionViewModel.getAllTransactions(user, tokenString)
+    }
+    val transactionList = transactionViewModel.transactions
+    val filteredTransactions = transactionList.sortedByDescending { it.dateTransaction }
 
     LazyColumn(
         modifier = Modifier
@@ -285,7 +292,7 @@ fun DashboardScreen(
         }
 
         item{Spacer(modifier = Modifier.height(12.dp))}
-        // Recent Transaction
+
         item {
             Column(
                 modifier = Modifier
@@ -330,11 +337,15 @@ fun DashboardScreen(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-//                    transactions.take(5).forEach { item ->
-//                        TransactionRow(
-//                            item = item
-//                        )
-//                    }
+                    filteredTransactions.take(3).forEach { item ->
+                        TransactionRow(
+                            item = item,
+                            navController = navController, // Replace with actual navController if available
+                            user = user,
+                            tokenString = tokenString ?: "",
+                            transactionViewModel = transactionViewModel,
+                        )
+                    }
                 }
             }
         }

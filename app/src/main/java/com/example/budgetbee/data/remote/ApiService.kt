@@ -1,13 +1,14 @@
 package com.example.budgetbee.data.remote
 
-import com.example.budgetbee.data.model.Token
-import com.example.budgetbee.data.model.User
-import com.example.budgetbee.data.request.CategorRequest
+import com.example.budgetbee.data.request.CategoryRequest
 import com.example.budgetbee.data.response.AuthResponse
 import com.example.budgetbee.data.request.LoginRequest
 import com.example.budgetbee.data.request.RegisterRequest
 import com.example.budgetbee.data.request.TransactionRequest
-import com.example.budgetbee.data.response.CategoryResponse
+import com.example.budgetbee.data.response.GetAllCategoryResponse
+import com.example.budgetbee.data.response.GetAllTransactionResponse
+import com.example.budgetbee.data.response.SingleCategoryResponse
+import com.example.budgetbee.data.response.SingleTransactionResponse
 import com.example.budgetbee.data.response.TransactionResponse
 import com.example.budgetbee.data.response.UserResponse
 import retrofit2.Response
@@ -45,15 +46,7 @@ interface ApiService {
     suspend fun getAllTransactions(
         @Path("userId") userId: String,
         @Header("Authorization") token: String
-    ): Response<List<TransactionResponse>>
-
-    @GET("users/{userId}/transactions/{transactionId}")
-    @Headers("Content-Type: application/json")
-    suspend fun getTransactionById(
-        @Path("userId") userId: String,
-        @Path("transactionId") transactionId: String,
-        @Header("Authorization") token: String
-    ): Response<TransactionResponse>
+    ): Response<GetAllTransactionResponse>
 
     @POST("users/{userId}/transactions")
     @Headers("Content-Type: application/json")
@@ -61,7 +54,7 @@ interface ApiService {
         @Path("userId") userId: String,
         @Body transaction: TransactionRequest,
         @Header("Authorization") token: String
-    ): Response<TransactionResponse>
+    ): Response<SingleTransactionResponse>
 
     @PATCH("users/{userId}/transactions/{transactionId}")
     @Headers("Content-Type: application/json")
@@ -81,13 +74,21 @@ interface ApiService {
     ): Response<Unit>
 
     //Target endpoints -----------------------------------------------------------------------------
+
     //Category endpoints ---------------------------------------------------------------------------
+    @GET("users/{userId}/categories")
+    @Headers("Content-Type: application/json")
+    suspend fun getAllCategories(
+        @Path("userId") userId: String,
+        @Header("Authorization") token: String
+    ): Response<GetAllCategoryResponse>
+
     @POST("users/{userId}/categories")
     @Headers("Content-Type: application/json")
     suspend fun createCategory(
         @Path("userId") userId: String,
-        @Body category: CategorRequest,
+        @Body category: CategoryRequest,
         @Header("Authorization") token: String
-    ): Response<CategoryResponse>
+    ): Response<SingleCategoryResponse>
 }
 

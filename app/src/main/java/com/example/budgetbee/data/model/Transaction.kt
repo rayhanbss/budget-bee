@@ -11,7 +11,7 @@ data class Transaction(
     val isSaving: Boolean,
     val dateTransaction : String,
     val amount: Double,
-    val note: String,
+    val note: String?,
     val image: Image?,
     val categoryName: String,
     val categoryIsExpense: Boolean,
