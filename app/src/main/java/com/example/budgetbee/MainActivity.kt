@@ -9,7 +9,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,6 +33,7 @@ import com.example.budgetbee.data.repository.TokenRepository
 import com.example.budgetbee.data.repository.TransactionRepository
 import com.example.budgetbee.data.repository.UserRepository
 import com.example.budgetbee.ui.component.NavBar
+import com.example.budgetbee.ui.component.TransactionForm
 import com.example.budgetbee.ui.screen.auth.*
 import com.example.budgetbee.ui.screen.main.*
 import com.example.budgetbee.ui.theme.*
@@ -40,6 +45,7 @@ import com.example.budgetbee.viewmodel.UserViewModel
 import com.example.budgetbee.viewmodel.UserViewModelFactory
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         super.onCreate(savedInstanceState)
@@ -101,11 +107,31 @@ class MainActivity : ComponentActivity() {
                     isCheckingAuth.value = false
                 }
 
+                val showBottomSheet = remember { mutableStateOf(false) }
+                val showBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+                val isTransactionCreated = transactionViewModel.isTransactionCreated
+
+                if (showBottomSheet.value) {
+                    ModalBottomSheet(
+                        onDismissRequest = { showBottomSheet.value = false },
+                        containerColor = White,
+                        sheetState = showBottomSheetState,
+                        modifier = Modifier.wrapContentHeight()
+                    ) {
+                        TransactionForm(transactionViewModel, user, tokenString)
+                        if( isTransactionCreated) {
+                            showBottomSheet.value = false
+                            transactionViewModel.isTransactionCreated = false
+                            transactionViewModel.getAllTransactions(user, tokenString)
+                        }
+                    }
+                }
+
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
                         if (currentRoute !in listOf("login", "register", "launch", "forgot")) {
-                            NavBar(navController, currentRoute)
+                            NavBar(navController, currentRoute, showBottomSheet)
                         }
                     }
                 ) { innerPadding ->

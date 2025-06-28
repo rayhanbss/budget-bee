@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.budgetbee.data.model.Token
 import com.example.budgetbee.data.model.User
-import com.example.budgetbee.data.model.categoryList
 import com.example.budgetbee.data.response.AuthResponse
 import com.example.budgetbee.data.repository.AuthRepository
 import com.example.budgetbee.data.repository.CategoryRepository
@@ -124,15 +123,6 @@ class AuthViewModel (
                         loginResult.value = Result.success(it)
                         tokenRepository.saveToken(Token(token))
                         userRepository.saveUser(it.user)
-                        for (category in categoryList) {
-                            categoryRepository.createCategory(
-                                userId = user.id.toString(),
-                                name = category.name,
-                                isExpense = category.isExpense,
-                                token = token
-                            )
-                            Log.i("AuthViewModel", "${category.isExpense} category created: ${category.name}, User ID: ${user.id}")
-                        }
                         Log.i("AuthViewModel", "Registration successful: ${it.user}, ${Token(it.token)}")
                     } ?: run {
                         generalError.value = "Empty response body"

@@ -21,6 +21,7 @@ class TransactionViewModel(
         private set
     var errorMessage by mutableStateOf<String?>(null)
         private set
+    var isTransactionCreated by mutableStateOf(false)
 
     fun getAllTransactions(user: User?, token: String?) {
         viewModelScope.launch {
@@ -55,24 +56,119 @@ class TransactionViewModel(
         }
     }
 
+    fun createTransaction(
+        userId: String?,
+        token: String?,
+        name: String,
+        categoryId: String,
+        targetId: String?,
+        isSaving: Boolean,
+        amount: Double,
+        note: String
+    ) {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+            isTransactionCreated = false
 
+            try {
+                // Validate and prepare data to match working Postman format
+                Log.i("TransactionViewModel", "Creating transaction with userId: $userId, token: $token, name: $name, categoryId: $categoryId, targetId: $targetId, isSaving: $isSaving, amount: $amount, note: $note")
+                val response = transactionRepository.createTransaction(
+                    userId = userId ?: "",
+                    name = name,
+                    categoryId = categoryId,
+                    targetId = targetId,
+                    isSaving = isSaving,
+                    amount = amount,
+                    note = note,
+                    token = token ?: ""
+                )
+
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    Log.i("TransactionViewModel", "Transaction posted successfully: $body")
+                    isTransactionCreated = true
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    errorMessage = errorBody ?: "Unknown error"
+                    Log.e("TransactionViewModel", "Error posting transaction: $errorMessage, Status: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                errorMessage = e.message
+                Log.e("TransactionViewModel", "Exception posting transaction: ${e.message}")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun updateTransaction(
+        userId: String?,
+        token: String?,
+        transactionId: String,
+        name: String,
+        categoryId: String,
+        targetId: String?,
+        dateTransaction: String,
+        isSaving: Boolean,
+        amount: Double,
+        note: String
+    ) {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+
+            try {
+                Log.i("TransactionViewModel", "Updating transaction with ID: $transactionId")
+                val response = transactionRepository.updateTransaction(
+                    userId = userId ?: "",
+                    transactionId = transactionId,
+                    name = name,
+                    categoryId = categoryId,
+                    targetId = targetId,
+                    dateTransaction = dateTransaction,
+                    isSaving = isSaving,
+                    amount = amount,
+                    note = note,
+                    token = token ?: ""
+                )
+
+                if (response.isSuccessful) {
+                    Log.i("TransactionViewModel", "Transaction updated successfully")
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    errorMessage = errorBody ?: "Unknown error"
+                    Log.e("TransactionViewModel", "Error updating transaction: $errorMessage, Status: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                errorMessage = e.message
+                Log.e("TransactionViewModel", "Exception updating transaction: ${e.message}")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
 }
 
 fun TransactionResponse.toTransaction(): Transaction {
     return Transaction(
         id = id.toString(),
-        name = name,
+        name = name, // Handle null name
         userId = userId.toString(),
-        categoryId = categoryId?.toString(),
+        categoryId = categoryId.toString(),
         targetId = targetId?.toString(),
         isSaving = isSaving,
-        dateTransaction = dateTransaction,
+        dateTransaction = dateTransaction, // Handle null dateTransaction
         amount = amount,
         note = note,
         image = image,
-        categoryName = categoryName,
+        categoryName = categoryName, // Handle null categoryName
         categoryIsExpense = categoryIsExpense,
         targetName = targetName
     )
 }
+
+
+
 

@@ -1,7 +1,5 @@
 package com.example.budgetbee.data.remote
 
-import com.example.budgetbee.data.model.Token
-import com.example.budgetbee.data.model.User
 import com.example.budgetbee.data.request.CategorRequest
 import com.example.budgetbee.data.response.AuthResponse
 import com.example.budgetbee.data.request.LoginRequest
@@ -9,6 +7,7 @@ import com.example.budgetbee.data.request.RegisterRequest
 import com.example.budgetbee.data.request.TransactionRequest
 import com.example.budgetbee.data.response.CategoryResponse
 import com.example.budgetbee.data.response.GetAllTransactionResponse
+import com.example.budgetbee.data.response.SingleTransactionResponse
 import com.example.budgetbee.data.response.TransactionResponse
 import com.example.budgetbee.data.response.UserResponse
 import retrofit2.Response
@@ -48,21 +47,13 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<GetAllTransactionResponse>
 
-    @GET("users/{userId}/transactions/{transactionId}")
-    @Headers("Content-Type: application/json")
-    suspend fun getTransactionById(
-        @Path("userId") userId: String,
-        @Path("transactionId") transactionId: String,
-        @Header("Authorization") token: String
-    ): Response<TransactionResponse>
-
     @POST("users/{userId}/transactions")
     @Headers("Content-Type: application/json")
     suspend fun createTransaction(
         @Path("userId") userId: String,
         @Body transaction: TransactionRequest,
         @Header("Authorization") token: String
-    ): Response<TransactionResponse>
+    ): Response<SingleTransactionResponse>
 
     @PATCH("users/{userId}/transactions/{transactionId}")
     @Headers("Content-Type: application/json")

@@ -8,7 +8,7 @@ data class TransactionResponse(
     val id: Int,
     val name: String,
     val userId: Int,
-    val categoryId: Int?,
+    val categoryId: Int,
     val targetId: Int?,
     val isSaving: Boolean,
     val dateTransaction : String,
