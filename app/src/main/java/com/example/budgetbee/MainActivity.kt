@@ -39,6 +39,8 @@ import com.example.budgetbee.ui.screen.main.*
 import com.example.budgetbee.ui.theme.*
 import com.example.budgetbee.viewmodel.AuthViewModel
 import com.example.budgetbee.viewmodel.AuthViewModelFactory
+import com.example.budgetbee.viewmodel.CategoryViewModel
+import com.example.budgetbee.viewmodel.CategoryViewModelFactory
 import com.example.budgetbee.viewmodel.TransactionViewModel
 import com.example.budgetbee.viewmodel.TransactionViewModelFactory
 import com.example.budgetbee.viewmodel.UserViewModel
@@ -64,6 +66,7 @@ class MainActivity : ComponentActivity() {
                 val authRepository = remember { AuthRepository(context) }
                 val transactionRepository = remember { TransactionRepository(context) }
 
+
                 // Initialize ViewModels with factories
                 val userFactory = remember { UserViewModelFactory(userRepository) }
                 val userViewModel: UserViewModel = viewModel(factory = userFactory)
@@ -80,6 +83,9 @@ class MainActivity : ComponentActivity() {
 
                 val transactionFactory = remember { TransactionViewModelFactory(transactionRepository) }
                 val transactionViewModel: TransactionViewModel = viewModel(factory = transactionFactory)
+
+                val categoryViewModelFactory = remember { CategoryViewModelFactory(context) }
+                val categoryViewModel: CategoryViewModel = viewModel(factory = categoryViewModelFactory)
 
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -134,7 +140,7 @@ class MainActivity : ComponentActivity() {
                             },
                             onAddCategory = {
                                 showAddOptionsBottomSheet.value = false
-                                // navController.navigate("add_category")
+                                navController.navigate("category")
                             },
                             onAddTarget = {
                                 showAddOptionsBottomSheet.value = false
@@ -147,7 +153,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
-                        if (currentRoute !in listOf("login", "register", "launch", "forgot", "add_transaction", "edit_transaction/{transactionId}")) {
+                        if (currentRoute !in listOf("login", "register", "launch", "forgot")) {
                             NavBar(navController, currentRoute, showAddOptionsBottomSheet)
                         }
                     }
@@ -169,6 +175,7 @@ class MainActivity : ComponentActivity() {
                             composable("register") { RegisterScreen(navController, authViewModel) }
                             composable("launch") { LaunchPage(navController)}
                             composable("forgot") { ForgotPasswordScreen(navController) }
+                            composable("category") { AddCategoryScreen(navController, categoryViewModel, user, tokenString) }
                             composable("add_transaction") {
                                 AddTransactionScreen(
                                     navController = navController,
