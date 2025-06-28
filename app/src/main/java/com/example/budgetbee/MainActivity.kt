@@ -32,8 +32,8 @@ import com.example.budgetbee.data.repository.CategoryRepository
 import com.example.budgetbee.data.repository.TokenRepository
 import com.example.budgetbee.data.repository.TransactionRepository
 import com.example.budgetbee.data.repository.UserRepository
+import com.example.budgetbee.ui.component.AddOptionsBottomSheet
 import com.example.budgetbee.ui.component.NavBar
-import com.example.budgetbee.ui.component.TransactionForm
 import com.example.budgetbee.ui.screen.auth.*
 import com.example.budgetbee.ui.screen.main.*
 import com.example.budgetbee.ui.theme.*
@@ -107,31 +107,48 @@ class MainActivity : ComponentActivity() {
                     isCheckingAuth.value = false
                 }
 
-                val showBottomSheet = remember { mutableStateOf(false) }
-                val showBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+                val showAddOptionsBottomSheet = remember { mutableStateOf(false) }
+                val addOptionsBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
                 val isTransactionCreated = transactionViewModel.isTransactionCreated
+                val isTransactionUpdated = transactionViewModel.isTransactionUpdated
 
-                if (showBottomSheet.value) {
+                LaunchedEffect(isTransactionCreated, isTransactionUpdated) {
+                    if (isTransactionCreated || isTransactionUpdated) {
+                        transactionViewModel.getAllTransactions(user, tokenString)
+                        transactionViewModel.isTransactionCreated = false
+                        transactionViewModel.isTransactionUpdated = false
+                    }
+                }
+
+                if (showAddOptionsBottomSheet.value) {
                     ModalBottomSheet(
-                        onDismissRequest = { showBottomSheet.value = false },
+                        onDismissRequest = { showAddOptionsBottomSheet.value = false },
                         containerColor = White,
-                        sheetState = showBottomSheetState,
+                        sheetState = addOptionsBottomSheetState,
                         modifier = Modifier.wrapContentHeight()
                     ) {
-                        TransactionForm(transactionViewModel, user, tokenString)
-                        if( isTransactionCreated) {
-                            showBottomSheet.value = false
-                            transactionViewModel.isTransactionCreated = false
-                            transactionViewModel.getAllTransactions(user, tokenString)
-                        }
+                        AddOptionsBottomSheet(
+                            onAddTransaction = {
+                                showAddOptionsBottomSheet.value = false
+                                navController.navigate("add_transaction")
+                            },
+                            onAddCategory = {
+                                showAddOptionsBottomSheet.value = false
+                                // navController.navigate("add_category")
+                            },
+                            onAddTarget = {
+                                showAddOptionsBottomSheet.value = false
+                                // navController.navigate("add_target")
+                            }
+                        )
                     }
                 }
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
-                        if (currentRoute !in listOf("login", "register", "launch", "forgot")) {
-                            NavBar(navController, currentRoute, showBottomSheet)
+                        if (currentRoute !in listOf("login", "register", "launch", "forgot", "add_transaction", "edit_transaction/{transactionId}")) {
+                            NavBar(navController, currentRoute, showAddOptionsBottomSheet)
                         }
                     }
                 ) { innerPadding ->
@@ -144,14 +161,35 @@ class MainActivity : ComponentActivity() {
                             navController = navController,
                             startDestination = "launch"
                         ) {
-                            composable("dashboard") { DashboardScreen(userViewModel) }
-                            composable("transaction") { TransactionScreen(transactionViewModel, user, tokenString) }
+                            composable("dashboard") { DashboardScreen(userViewModel, transactionViewModel, tokenString, navController) }
+                            composable("transaction") { TransactionScreen(transactionViewModel, user, tokenString, navController) }
                             composable("target") { TargetScreen() }
                             composable("profile") { ProfileScreen(context, navController, authViewModel, userViewModel) }
                             composable("login") { LoginScreen(navController, authViewModel) }
                             composable("register") { RegisterScreen(navController, authViewModel) }
                             composable("launch") { LaunchPage(navController)}
                             composable("forgot") { ForgotPasswordScreen(navController) }
+                            composable("add_transaction") {
+                                AddTransactionScreen(
+                                    navController = navController,
+                                    transactionViewModel = transactionViewModel,
+                                    user = user,
+                                    tokenString = tokenString
+                                )
+                            }
+                            composable("edit_transaction/{transactionId}") { backStackEntry ->
+                                val transactionId = backStackEntry.arguments?.getString("transactionId")
+                                val transaction = transactionViewModel.transactions.find { it.id == transactionId }
+                                if (transaction != null) {
+                                    EditTransactionScreen(
+                                        navController = navController,
+                                        transactionViewModel = transactionViewModel,
+                                        user = user,
+                                        tokenString = tokenString,
+                                        transaction = transaction
+                                    )
+                                }
+                            }
                         }
                     }
                 }

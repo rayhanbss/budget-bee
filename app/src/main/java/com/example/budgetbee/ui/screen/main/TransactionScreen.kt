@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.budgetbee.data.model.User
 import com.example.budgetbee.ui.component.TransactionRow
 import com.example.budgetbee.ui.theme.Black
@@ -55,7 +56,8 @@ val TextColorPrimary = Black
 fun TransactionScreen(
     transactionViewModel: TransactionViewModel,
     user: User?,
-    token: String?
+    token: String?,
+    navController: NavHostController
 ) {
 
     LaunchedEffect(user, token) {
@@ -268,7 +270,13 @@ fun TransactionScreen(
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
             items(filteredTransactions) { item ->
-                TransactionRow(item = item)
+                TransactionRow(
+                    item = item,
+                    navController = navController,
+                    user = user,
+                    tokenString = token ?: "",
+                    transactionViewModel = transactionViewModel,
+                )
             }
         }
     }

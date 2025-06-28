@@ -22,6 +22,7 @@ class TransactionViewModel(
     var errorMessage by mutableStateOf<String?>(null)
         private set
     var isTransactionCreated by mutableStateOf(false)
+    var isTransactionUpdated by mutableStateOf(false)
 
     fun getAllTransactions(user: User?, token: String?) {
         viewModelScope.launch {
@@ -136,6 +137,7 @@ class TransactionViewModel(
 
                 if (response.isSuccessful) {
                     Log.i("TransactionViewModel", "Transaction updated successfully")
+                    isTransactionUpdated = true
                 } else {
                     val errorBody = response.errorBody()?.string()
                     errorMessage = errorBody ?: "Unknown error"
@@ -149,21 +151,55 @@ class TransactionViewModel(
             }
         }
     }
+
+    fun deleteTransaction(
+        user: User?,
+        token: String?,
+        transactionId: String
+    ) {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+
+            try {
+                Log.i("TransactionViewModel", "Deleting transaction with ID: $transactionId")
+                val response = transactionRepository.deleteTransaction(
+                    userId = user?.id.toString(),
+                    transactionId = transactionId,
+                    token = token ?: ""
+                )
+
+                if (response.isSuccessful) {
+                    Log.i("TransactionViewModel", "Transaction deleted successfully")
+                    getAllTransactions(user, token)
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    errorMessage = errorBody ?: "Unknown error"
+                    Log.e("TransactionViewModel", "Error deleting transaction: $errorMessage, Status: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                errorMessage = e.message
+                Log.e("TransactionViewModel", "Exception deleting transaction: ${e.message}")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
 }
 
 fun TransactionResponse.toTransaction(): Transaction {
     return Transaction(
         id = id.toString(),
-        name = name, // Handle null name
+        name = name,
         userId = userId.toString(),
         categoryId = categoryId.toString(),
         targetId = targetId?.toString(),
         isSaving = isSaving,
-        dateTransaction = dateTransaction, // Handle null dateTransaction
+        dateTransaction = dateTransaction,
         amount = amount,
         note = note,
         image = image,
-        categoryName = categoryName, // Handle null categoryName
+        categoryName = categoryName,
         categoryIsExpense = categoryIsExpense,
         targetName = targetName
     )

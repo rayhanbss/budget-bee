@@ -1,6 +1,5 @@
 package com.example.budgetbee.ui.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowOutward
-import androidx.compose.material.icons.filled.LunchDining
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,21 +22,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.budgetbee.data.model.Transaction
 import com.example.budgetbee.ui.theme.Black
 import com.example.budgetbee.ui.theme.White
-import com.example.budgetbee.ui.theme.YellowPrimary
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.ui.draw.rotate
+import androidx.navigation.NavHostController
+import com.example.budgetbee.data.model.User
 import com.example.budgetbee.ui.theme.Failed
 import com.example.budgetbee.ui.theme.Success
+import com.example.budgetbee.viewmodel.TransactionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TransactionRow(modifier: Modifier = Modifier, item: Transaction) {
+fun TransactionRow(
+    item: Transaction,
+    navController: NavHostController,
+    transactionViewModel: TransactionViewModel,
+    user: User?,
+    tokenString: String? = null
+) {
     val showBottomSheet = remember { mutableStateOf(false) }
 
     if (showBottomSheet.value) {
@@ -46,7 +51,14 @@ fun TransactionRow(modifier: Modifier = Modifier, item: Transaction) {
             onDismissRequest = { showBottomSheet.value = false },
             containerColor = White
         ) {
-            TransactionDetail(item)
+            TransactionDetail(
+                transaction = item,
+                showBottomSheet = showBottomSheet,
+                navController = navController,
+                transactionViewModel = transactionViewModel,
+                user = user,
+                tokenString = tokenString
+            )
         }
     }
 
@@ -114,26 +126,4 @@ fun TransactionRow(modifier: Modifier = Modifier, item: Transaction) {
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun TransactionRowPreview() {
-    TransactionRow(
-        item = Transaction(
-            id = "1",
-            name = "Groceries",
-            categoryId = "2",
-            isSaving = false,
-            dateTransaction = "2024-06-01",
-            amount = 50.0,
-            note = "Weekly groceries",
-            targetId = null,
-            userId = "1",
-            image = null,
-            categoryName = "test",
-            categoryIsExpense = true,
-            targetName = "test"
-        )
-    )
 }

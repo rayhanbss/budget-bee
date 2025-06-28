@@ -1,6 +1,5 @@
 package com.example.budgetbee.ui.component
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,41 +13,48 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowOutward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.budgetbee.data.model.Transaction
+import com.example.budgetbee.data.model.User
 import com.example.budgetbee.ui.theme.Black
 import com.example.budgetbee.ui.theme.Failed
 import com.example.budgetbee.ui.theme.Success
 import com.example.budgetbee.ui.theme.White
 import com.example.budgetbee.ui.theme.YellowPrimary
+import com.example.budgetbee.viewmodel.TransactionViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TransactionDetail (transaction: Transaction) {
+fun TransactionDetail (
+    transaction: Transaction,
+    showBottomSheet: MutableState<Boolean>,
+    navController: NavHostController,
+    transactionViewModel: TransactionViewModel,
+    user: User?,
+    tokenString: String? = null
+) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -81,7 +87,12 @@ fun TransactionDetail (transaction: Transaction) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
-                    onClick = {  },
+                    onClick = {
+                        navController.navigate("edit_transaction/${transaction.id}") {
+                            launchSingleTop = true
+                        }
+                        showBottomSheet.value = false
+                    },
                     modifier = Modifier
                         .size(24.dp)
                 ) {
@@ -92,7 +103,7 @@ fun TransactionDetail (transaction: Transaction) {
                     )
                 }
                 IconButton(
-                    onClick = {  },
+                    onClick = { showDeleteDialog = true },
                     modifier = Modifier
                         .size(24.dp)
                 ) {
@@ -210,28 +221,33 @@ fun TransactionDetail (transaction: Transaction) {
                 )
             }
         }
+
+        if (showDeleteDialog) {
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog = false },
+                shape = RoundedCornerShape(8.dp),
+                containerColor = White,
+                titleContentColor = YellowPrimary,
+                textContentColor = Black,
+                title = { Text(text = "Confirm Delete", fontWeight = FontWeight.Bold) },
+                text = { Text(text = "Are you sure you want to delete this transaction?") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        transactionViewModel.deleteTransaction(user, tokenString, transaction.id)
+                        showBottomSheet.value = false
+                        showDeleteDialog = false
+                    }) {
+                        Text("Delete", color = Failed)
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { showDeleteDialog = false },
+                    ) {
+                        Text("Cancel", color = Black)
+                    }
+                }
+            )
+        }
     }
 }
-
-@Preview
-@Composable
-fun TransactionDetailPreview() {
-    TransactionDetail(
-        Transaction(
-            id = "1",
-            name = "Groceries",
-            categoryId = "2",
-            isSaving = false,
-            dateTransaction = "2024-06-01",
-            amount = 50.0,
-            note = "Weekly groceries",
-            targetId = null,
-            userId = "1",
-            image = null,
-            categoryName = "Food",
-            categoryIsExpense = true,
-            targetName = null
-        )
-    )
-}
-
