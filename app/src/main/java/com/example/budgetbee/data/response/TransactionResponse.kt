@@ -1,6 +1,8 @@
 package com.example.budgetbee.data.response
 
 import android.media.Image
+import com.example.budgetbee.util.BooleanIntAdapter
+import com.google.gson.annotations.JsonAdapter
 
 data class TransactionResponse(
     val id: Int,
@@ -11,9 +13,10 @@ data class TransactionResponse(
     val isSaving: Boolean,
     val dateTransaction : String,
     val amount: Double,
-    val note: String,
+    val note: String?,
     val image: Image?,
     val categoryName: String,
+    @JsonAdapter(BooleanIntAdapter::class)
     val categoryIsExpense: Boolean,
     val targetName: String?
 )

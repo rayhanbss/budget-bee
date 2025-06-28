@@ -8,6 +8,7 @@ import com.example.budgetbee.data.request.LoginRequest
 import com.example.budgetbee.data.request.RegisterRequest
 import com.example.budgetbee.data.request.TransactionRequest
 import com.example.budgetbee.data.response.CategoryResponse
+import com.example.budgetbee.data.response.GetAllTransactionResponse
 import com.example.budgetbee.data.response.TransactionResponse
 import com.example.budgetbee.data.response.UserResponse
 import retrofit2.Response
@@ -45,7 +46,7 @@ interface ApiService {
     suspend fun getAllTransactions(
         @Path("userId") userId: String,
         @Header("Authorization") token: String
-    ): Response<List<TransactionResponse>>
+    ): Response<GetAllTransactionResponse>
 
     @GET("users/{userId}/transactions/{transactionId}")
     @Headers("Content-Type: application/json")
@@ -81,6 +82,8 @@ interface ApiService {
     ): Response<Unit>
 
     //Target endpoints -----------------------------------------------------------------------------
+    @GET("users/{userId}/targets")
+
     //Category endpoints ---------------------------------------------------------------------------
     @POST("users/{userId}/categories")
     @Headers("Content-Type: application/json")

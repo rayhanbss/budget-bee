@@ -30,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.TextStyle
@@ -51,7 +52,7 @@ fun TransactionDetail (transaction: Transaction) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(White),
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -113,8 +114,8 @@ fun TransactionDetail (transaction: Transaction) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(White)
-                    .shadow(2.dp, shape = RoundedCornerShape(8.dp)),
+                    .shadow(2.dp, shape = RoundedCornerShape(8.dp))
+                    .background(White),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -157,8 +158,8 @@ fun TransactionDetail (transaction: Transaction) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(White)
-                    .shadow(2.dp, shape = RoundedCornerShape(8.dp)),
+                    .shadow(2.dp, shape = RoundedCornerShape(8.dp))
+                    .background(White),
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
@@ -187,8 +188,8 @@ fun TransactionDetail (transaction: Transaction) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(White)
-                    .shadow(2.dp, shape = RoundedCornerShape(8.dp)),
+                    .shadow(2.dp, shape = RoundedCornerShape(8.dp))
+                    .background(White),
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
@@ -200,7 +201,7 @@ fun TransactionDetail (transaction: Transaction) {
                         .padding(16.dp, 16.dp , 16.dp, 4.dp)
                 )
                 Text(
-                    text = transaction.note,
+                    text = transaction.note ?: "No notes available",
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
                     modifier = Modifier

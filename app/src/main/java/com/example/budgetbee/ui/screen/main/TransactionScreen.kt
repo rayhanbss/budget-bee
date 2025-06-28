@@ -1,7 +1,6 @@
 package com.example.budgetbee.ui.screen.main
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,35 +27,54 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.budgetbee.R
+import com.example.budgetbee.data.model.User
 import com.example.budgetbee.ui.component.TransactionRow
 import com.example.budgetbee.ui.theme.Black
 import com.example.budgetbee.ui.theme.White
 import com.example.budgetbee.ui.theme.YellowPrimary
+import com.example.budgetbee.viewmodel.TransactionViewModel
 
 val DropdownBackground = White
 val TextColorPrimary = Black
 
 @Composable
-fun TransactionScreen() {
+fun TransactionScreen(
+    transactionViewModel: TransactionViewModel,
+    user: User?,
+    token: String?
+) {
+
+    LaunchedEffect(user, token) {
+        if (user != null && token != null) {
+            Log.i("TransactionScreen", "Calling getAllTransactions with user: ${user.id}, token available: ${token.isNotBlank()}")
+            transactionViewModel.getAllTransactions(user, token)
+        } else {
+            Log.w("TransactionScreen", "User or token is null - user: $user, token: $token")
+        }
+    }
+
+    val isLoading = transactionViewModel.isLoading
+    val transactionList = transactionViewModel.transactions
+    val errorMessage = transactionViewModel.errorMessage
+
+    Log.i("TransactionScreen", "Transaction list size: ${transactionList.size}")
+    Log.i("TransactionScreen", "Is loading: $isLoading")
+    Log.i("TransactionScreen", "Error message: $errorMessage")
+
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("Category") }
     var categoryExpanded by remember { mutableStateOf(false) }
@@ -67,16 +84,16 @@ fun TransactionScreen() {
     var transactionTypeExpanded by remember { mutableStateOf(false) }
     val transactionTypes = listOf("Income", "Expense")
 
-//    val filteredTransactions = transactions.filter { item ->
-//        val matchesQuery = searchQuery.isBlank() || item.title.contains(searchQuery, ignoreCase = true)
-//        val matchesCategory = selectedCategory == "Category" || item.category == selectedCategory
-//        val matchesType = selectedTransactionType == "Transaction Type" ||
-//                (selectedTransactionType == "Income" && !item.isExpense) ||
-//                (selectedTransactionType == "Expense" && item.isExpense)
-//
-//        matchesQuery && matchesCategory && matchesType
-//    }
-
+    val filteredTransactions = transactionList
+        .filter { item ->
+            val matchesQuery = searchQuery.isBlank() || item.name.contains(searchQuery, ignoreCase = true)
+            val matchesCategory = selectedCategory == "Category" || item.categoryName == selectedCategory
+            val matchesType = selectedTransactionType == "Transaction Type" ||
+                    (selectedTransactionType == "Income" && !item.categoryIsExpense) ||
+                    (selectedTransactionType == "Expense" && item.categoryIsExpense)
+            matchesQuery && matchesCategory && matchesType
+        }
+        .sortedByDescending { it.dateTransaction }
 
     Column(
         modifier = Modifier
@@ -84,180 +101,175 @@ fun TransactionScreen() {
             .background(White),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(R.drawable.header),
-                contentDescription = "Header",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-            Text(
-                text = "Transaction",
-                textAlign = TextAlign.Center,
-                color = YellowPrimary,
-                fontSize = 38.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-            )
-        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 32.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(16.dp)
+                .shadow(2.dp, shape = RoundedCornerShape(12.dp))
+                .background(White),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                placeholder = { Text("Search Transaction", color = Black) },
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp),
-                textStyle = TextStyle(fontWeight = FontWeight.Normal, fontSize = 14.sp),
-                shape = RoundedCornerShape(10.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = YellowPrimary,
-                    unfocusedBorderColor = YellowPrimary.copy(alpha = 0.7f),
-                    focusedLabelColor = Black,
-                    unfocusedLabelColor = Gray,
-                    focusedTextColor = Black,
-                    unfocusedTextColor = Black,
-                ),
-                singleLine = true,
-                leadingIcon = null,
-                trailingIcon = {
-                    if (searchQuery.isNotEmpty()) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Clear",
-                            tint = Black,
-                            modifier = Modifier
-                                .padding(end = 8.dp)
-                                .clickable { searchQuery = "" }
-                        )
-                    }else{
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search",
-                            tint = Black
-                        )
-                    }
-                }
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    .padding(16.dp, 16.dp, 16.dp, 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
-                Box(modifier = Modifier.weight(1f)) {
-                    OutlinedButton(
-                        onClick = { categoryExpanded = true },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = DropdownBackground,
-                            contentColor = TextColorPrimary
-                        ),
-                        border = BorderStroke(1.dp, YellowPrimary),
-                        contentPadding = PaddingValues(horizontal = 12.dp)
-                    ) {
-                        Text(
-                            selectedCategory,
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Start,
-                            fontSize = 14.sp
-                        )
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown Category")
-                    }
-                    DropdownMenu(
-                        expanded = categoryExpanded,
-                        onDismissRequest = { categoryExpanded = false },
-                        modifier = Modifier.background(Color.White)
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("Reset", fontSize = 14.sp, color = Color.Black) },
-                            onClick = {
-                                selectedCategory = "Category"
-                                categoryExpanded = false
-                            }
-                        )
-                        categories.forEach { category ->
-                            DropdownMenuItem(
-                                text = { Text(category, fontSize = 14.sp, color = Color.Black) },
-                                onClick = {
-                                    selectedCategory = category
-                                    categoryExpanded = false
-                                }
+                Text(
+                    text = "My ",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Black
+                )
+                Text(
+                    text = "Transaction",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = YellowPrimary
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp, 8.dp, 16.dp, 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text("Search Transaction") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Black,
+                        focusedLabelColor = Black,
+                        unfocusedLabelColor = Gray,
+                        focusedTextColor = Black,
+                        unfocusedTextColor = Black,
+                    ),
+                    singleLine = true,
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Clear",
+                                tint = Black,
+                                modifier = Modifier
+                                    .padding(end = 8.dp)
+                                    .clickable { searchQuery = "" }
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Search",
+                                tint = Black
                             )
                         }
                     }
-                }
-                Box(modifier = Modifier.weight(1f)) {
-                    OutlinedButton(
-                        onClick = { transactionTypeExpanded = true },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = DropdownBackground,
-                            contentColor = TextColorPrimary
-                        ),
-                        border = BorderStroke(1.dp, YellowPrimary),
-                        contentPadding = PaddingValues(horizontal = 12.dp)
-                    ) {
-                        Text(
-                            selectedTransactionType,
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Start,
-                            fontSize = 14.sp
-                        )
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown Transaction Type")
-                    }
-                    DropdownMenu(
-                        expanded = transactionTypeExpanded,
-                        onDismissRequest = { transactionTypeExpanded = false },
-                        modifier = Modifier.background(Color.White)
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("Reset", fontSize = 14.sp, color = Color.Black) },
-                            onClick = {
-                                selectedTransactionType = "Transaction Type"
-                                categoryExpanded = false
-                            }
-                        )
-                        transactionTypes.forEach { type ->
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Box(modifier = Modifier.weight(1f)) {
+                        OutlinedButton(
+                            onClick = { categoryExpanded = true },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(4.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = DropdownBackground,
+                                contentColor = Black
+                            ),
+                            contentPadding = PaddingValues(horizontal = 8.dp)
+                        ) {
+                            Text(
+                                selectedCategory,
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.Start,
+                                fontSize = 12.sp
+                            )
+                            Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown Category")
+                        }
+                        DropdownMenu(
+                            expanded = categoryExpanded,
+                            onDismissRequest = { categoryExpanded = false },
+                            modifier = Modifier
+                                .background(Color.White)
+                        ) {
                             DropdownMenuItem(
-                                text = { Text(type, fontSize = 14.sp, color = Color.Black) },
+                                text = { Text("Reset", fontSize = 12.sp, color = Color.Black) },
                                 onClick = {
-                                    selectedTransactionType = type
+                                    selectedCategory = "Category"
+                                    categoryExpanded = false
+                                }
+                            )
+                            categories.forEach { category ->
+                                DropdownMenuItem(
+                                    text = { Text(category, fontSize = 12.sp, color = Color.Black) },
+                                    onClick = {
+                                        selectedCategory = category
+                                        categoryExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    Box(modifier = Modifier.weight(1f)) {
+                        OutlinedButton(
+                            onClick = { transactionTypeExpanded = true },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(4.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = DropdownBackground,
+                                contentColor = TextColorPrimary
+                            ),
+                            contentPadding = PaddingValues(horizontal = 8.dp)
+                        ) {
+                            Text(
+                                selectedTransactionType,
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.Start,
+                                fontSize = 12.sp
+                            )
+                            Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown Transaction Type")
+                        }
+                        DropdownMenu(
+                            expanded = transactionTypeExpanded,
+                            onDismissRequest = { transactionTypeExpanded = false },
+                            modifier = Modifier.background(Color.White)
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Reset", fontSize = 12.sp, color = Color.Black) },
+                                onClick = {
+                                    selectedTransactionType = "Transaction Type"
                                     transactionTypeExpanded = false
                                 }
                             )
+                            transactionTypes.forEach { type ->
+                                DropdownMenuItem(
+                                    text = { Text(type, fontSize = 12.sp, color = Color.Black) },
+                                    onClick = {
+                                        selectedTransactionType = type
+                                        transactionTypeExpanded = false
+                                    }
+                                )
+                            }
                         }
                     }
                 }
             }
         }
-        LazyColumn {
-//            items(filteredTransactions) { item ->
-//                TransactionRow(item = item)
-//            }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            contentPadding = PaddingValues(bottom = 16.dp)
+        ) {
+            items(filteredTransactions) { item ->
+                TransactionRow(item = item)
+            }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TransactionPagePreview() {
-    TransactionScreen()
 }

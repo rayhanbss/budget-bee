@@ -53,6 +53,7 @@ import com.example.budgetbee.viewmodel.UserViewModel
 import com.example.budgetbee.viewmodel.UserViewModelFactory
 import androidx.core.net.toUri
 import com.example.budgetbee.data.repository.CategoryRepository
+import com.example.budgetbee.ui.theme.YellowTertiary
 
 @Composable
 fun ProfileScreen(
@@ -113,14 +114,21 @@ fun ProfileScreen(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.profile_photo),
-                    contentDescription = "Profile Picture",
+                Box(
                     modifier = Modifier
                         .size(96.dp)
                         .clip(CircleShape)
-                        .border(3.dp, YellowPrimary, CircleShape)
-                )
+                        .background(YellowTertiary)
+                        .border(2.dp, YellowPrimary, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = user?.name?.firstOrNull()?.uppercase() ?: "U",
+                        color = YellowPrimary,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 40.sp
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(12.dp))
 

@@ -1,4 +1,5 @@
 [versions]
+accompanistSwiperefreshVersion = "0.33.2-alpha"
 agp = "8.8.2"
 converterGson = "2.9.0"
 coreSplashscreen = "1.0.1"
@@ -16,7 +17,7 @@ activityCompose = "1.10.1"
 composeBom = "2025.05.01"
 loggingInterceptor = "4.9.3"
 material = "1.12.0"
-navigationCompose = " 2.9.0"
+navigationCompose = "2.9.0"
 navigationComposeJvmstubs = "2.9.0"
 navigationComposeVersion = "2.9.0"
 navigationComposeAndroid = "2.9.0"
@@ -37,6 +38,7 @@ androidx-navigation-compose-v277 = { module = "androidx.navigation:navigation-co
 androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
 androidx-security-crypto-v100alpha02 = { module = "androidx.security:security-crypto", version.ref = "securityCryptoVersion" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+google-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanistSwiperefreshVersion" }
 jetbrains-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJsonVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
