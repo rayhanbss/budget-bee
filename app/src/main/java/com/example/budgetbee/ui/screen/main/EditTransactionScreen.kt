@@ -55,13 +55,9 @@ fun EditTransactionScreen(
     transactionViewModel: TransactionViewModel,
     user: User?,
     tokenString: String?,
-    transaction: Transaction
+    transaction: Transaction,
+    categoryList: List<Category>
 ) {
-    val dummyCategory: List<Category> =  listOf(
-        Category(id = "1518", name = "test category", isExpense = true),
-        Category(id = "1520", name = "korupsi", isExpense = true)
-    )
-
     val name = remember { mutableStateOf(transaction.name) }
     val categoryId = remember { mutableStateOf(transaction.categoryId) }
     val targetId = remember { mutableStateOf(transaction.targetId) }
@@ -69,7 +65,7 @@ fun EditTransactionScreen(
     val note = remember { mutableStateOf(transaction.note) }
     var isSaving by remember { mutableStateOf(transaction.isSaving) }
     var expanded by remember { mutableStateOf(false) }
-    var selectedCategory = dummyCategory.find { it.id == categoryId.value }?.name ?: "Select Category"
+    var selectedCategory = categoryList.find { it.id == categoryId.value }?.name ?: "Select Category"
     val isTransactionUpdated = transactionViewModel.isTransactionUpdated
 
     LaunchedEffect(isTransactionUpdated) {
@@ -183,7 +179,7 @@ fun EditTransactionScreen(
                     modifier = Modifier
                         .background(Color.White)
                 ) {
-                    dummyCategory.forEach { category ->
+                    categoryList.forEach { category ->
                         DropdownMenuItem(
                             text = { Text(category.name, fontSize = 14.sp, color = Color.Black) },
                             onClick = {

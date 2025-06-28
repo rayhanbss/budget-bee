@@ -108,6 +108,7 @@ class MainActivity : ComponentActivity() {
                             popUpTo("launch") { inclusive = true }
                         }
                         transactionViewModel.getAllTransactions(user, tokenString)
+                        categoryViewModel.getAllCategories(user, tokenString)
                     }
                     kotlinx.coroutines.delay(1300)
                     isCheckingAuth.value = false
@@ -117,12 +118,19 @@ class MainActivity : ComponentActivity() {
                 val addOptionsBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
                 val isTransactionCreated = transactionViewModel.isTransactionCreated
                 val isTransactionUpdated = transactionViewModel.isTransactionUpdated
+                val isCategoryCreated = categoryViewModel.isCategoryCreated
 
-                LaunchedEffect(isTransactionCreated, isTransactionUpdated) {
+                val categoryList = categoryViewModel.categories
+
+                LaunchedEffect(isTransactionCreated, isTransactionUpdated, isCategoryCreated) {
                     if (isTransactionCreated || isTransactionUpdated) {
                         transactionViewModel.getAllTransactions(user, tokenString)
                         transactionViewModel.isTransactionCreated = false
                         transactionViewModel.isTransactionUpdated = false
+                    }
+                    if (isCategoryCreated) {
+                        categoryViewModel.getAllCategories(user, tokenString)
+                        categoryViewModel.isCategoryCreated = false
                     }
                 }
 
@@ -168,7 +176,7 @@ class MainActivity : ComponentActivity() {
                             startDestination = "launch"
                         ) {
                             composable("dashboard") { DashboardScreen(userViewModel, transactionViewModel, tokenString, navController) }
-                            composable("transaction") { TransactionScreen(transactionViewModel, user, tokenString, navController) }
+                            composable("transaction") { TransactionScreen(transactionViewModel, user, tokenString, navController, categoryList) }
                             composable("target") { TargetScreen() }
                             composable("profile") { ProfileScreen(context, navController, authViewModel, userViewModel) }
                             composable("login") { LoginScreen(navController, authViewModel) }
@@ -181,7 +189,8 @@ class MainActivity : ComponentActivity() {
                                     navController = navController,
                                     transactionViewModel = transactionViewModel,
                                     user = user,
-                                    tokenString = tokenString
+                                    tokenString = tokenString,
+                                    categoryList = categoryList
                                 )
                             }
                             composable("edit_transaction/{transactionId}") { backStackEntry ->
@@ -193,7 +202,8 @@ class MainActivity : ComponentActivity() {
                                         transactionViewModel = transactionViewModel,
                                         user = user,
                                         tokenString = tokenString,
-                                        transaction = transaction
+                                        transaction = transaction,
+                                        categoryList = categoryList
                                     )
                                 }
                             }

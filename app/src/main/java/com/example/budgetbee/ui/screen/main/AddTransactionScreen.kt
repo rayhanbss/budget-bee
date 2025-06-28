@@ -52,13 +52,9 @@ fun AddTransactionScreen(
     navController: NavController,
     transactionViewModel: TransactionViewModel,
     user: User?,
-    tokenString: String?
+    tokenString: String?,
+    categoryList: List<Category>
 ) {
-    val dummyCategory: List<Category> =  listOf(
-        Category(id = "1518", name = "test category", isExpense = true),
-        Category(id = "1520", name = "korupsi", isExpense = true)
-    )
-
     val name = remember { mutableStateOf("") }
     val categoryId = remember { mutableStateOf("") }
     val targetId = remember { mutableStateOf("") }
@@ -66,7 +62,7 @@ fun AddTransactionScreen(
     val note = remember { mutableStateOf("") }
     var isSaving by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
-    var selectedCategory = dummyCategory.find { it.id == categoryId.value }?.name ?: "Select Category"
+    var selectedCategory = categoryList.find { it.id == categoryId.value }?.name ?: "Select Category"
     val isTransactionCreated = transactionViewModel.isTransactionCreated
 
     LaunchedEffect(isTransactionCreated) {
@@ -178,7 +174,7 @@ fun AddTransactionScreen(
                     modifier = Modifier
                         .background(Color.White)
                 ) {
-                    dummyCategory.forEach { category ->
+                    categoryList.forEach { category ->
                         DropdownMenuItem(
                             text = { Text(category.name, fontSize = 14.sp, color = Color.Black) },
                             onClick = {
