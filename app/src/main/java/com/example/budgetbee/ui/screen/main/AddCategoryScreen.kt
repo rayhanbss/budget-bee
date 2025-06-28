@@ -2,9 +2,7 @@ package com.example.budgetbee.ui.screen.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,29 +11,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.budgetbee.data.model.User
 import com.example.budgetbee.ui.theme.Black
@@ -51,6 +45,14 @@ fun AddCategoryScreen(
     user: User?,
     tokenString: String? = null
 ) {
+    // Redirect to login if no token or user
+    LaunchedEffect(tokenString, user) {
+        if (tokenString.isNullOrBlank() || user?.id == null) {
+            navController.navigate("login") {
+                popUpTo("login") { inclusive = true }
+            }
+        }
+    }
     val name = remember { mutableStateOf("") }
     val isExpense = remember { mutableStateOf(false) }
 
@@ -114,17 +116,11 @@ fun AddCategoryScreen(
             Button(
                 onClick = {
                     categoryViewModel.createCategory(
+                        user = user,
                         name = name.value,
                         isExpense = isExpense.value,
-                        user = user,
-                        token = tokenString ?: ""
+                        token = tokenString
                     )
-                    if( categoryViewModel.isCategoryCreated) {
-                        navController.navigate("dashboard") {
-                            popUpTo("dashboard") { inclusive = true }
-                        }
-                        categoryViewModel.isCategoryCreated = false
-                    }
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = YellowPrimary,
@@ -144,6 +140,16 @@ fun AddCategoryScreen(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(8.dp)
                 )
+            }
+        }
+
+        // Navigate when category is created
+        val isCreated = categoryViewModel.isCategoryCreated
+        LaunchedEffect(isCreated) {
+            if (isCreated) {
+                navController.navigate("dashboard") {
+                    popUpTo("dashboard") { inclusive = true }
+                }
             }
         }
     }

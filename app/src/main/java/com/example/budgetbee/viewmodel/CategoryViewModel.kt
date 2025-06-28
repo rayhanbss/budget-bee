@@ -46,11 +46,14 @@ class CategoryViewModel(
                             userId = it.userId.toIntOrNull()
                         )
                     } ?: emptyList()
+                    Log.i("CategoryViewModel", "Categories Loaded: ${categories.size}")
                 } else {
                     errorMessage = response.errorBody()?.string() ?: "Unknown error"
+                    Log.e("CategoryViewModel", "Error fetching categories: $errorMessage, Status: ${response.code()}")
                 }
             } catch (e: Exception) {
                 errorMessage = e.message
+                Log.e("CategoryViewModel", "Exception fetching categories: ${e.message}")
             } finally {
                 isLoading = false
             }
@@ -87,4 +90,5 @@ class CategoryViewModel(
         }
     }
 }
+
 

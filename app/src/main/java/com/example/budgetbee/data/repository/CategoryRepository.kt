@@ -6,8 +6,8 @@ import com.example.budgetbee.data.request.CategoryRequest
 
 class CategoryRepository(context: Context) {
     suspend fun getAllCategories(userId: String, token: String) =
-        RetrofitClient.apiService.getAllCategories(userId, token)
+        RetrofitClient.apiService.getAllCategories(userId, "Bearer $token")
 
     suspend fun createCategory(userId: String, name: String, isExpense: Boolean, token: String) =
-        RetrofitClient.apiService.createCategory(userId, CategoryRequest(name, isExpense), token)
+        RetrofitClient.apiService.createCategory(userId, CategoryRequest(name, isExpense), "Bearer $token")
 }

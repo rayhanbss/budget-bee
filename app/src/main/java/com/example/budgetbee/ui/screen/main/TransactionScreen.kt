@@ -42,6 +42,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.budgetbee.data.model.Category
 import com.example.budgetbee.data.model.User
 import com.example.budgetbee.ui.component.TransactionRow
 import com.example.budgetbee.ui.theme.Black
@@ -57,7 +58,8 @@ fun TransactionScreen(
     transactionViewModel: TransactionViewModel,
     user: User?,
     token: String?,
-    navController: NavHostController
+    navController: NavHostController,
+    categoryList: List<Category>
 ) {
 
     LaunchedEffect(user, token) {
@@ -80,7 +82,6 @@ fun TransactionScreen(
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("Category") }
     var categoryExpanded by remember { mutableStateOf(false) }
-    val categories = listOf("Education", "Investment", "Salary", "Healthcare", "Food", "Bill", "Shopping", "Transport")
 
     var selectedTransactionType by remember { mutableStateOf("Transaction Type") }
     var transactionTypeExpanded by remember { mutableStateOf(false) }
@@ -206,11 +207,11 @@ fun TransactionScreen(
                                     categoryExpanded = false
                                 }
                             )
-                            categories.forEach { category ->
+                            categoryList.forEach { category ->
                                 DropdownMenuItem(
-                                    text = { Text(category, fontSize = 12.sp, color = Color.Black) },
+                                    text = { Text(category.name, fontSize = 12.sp, color = Color.Black) },
                                     onClick = {
-                                        selectedCategory = category
+                                        selectedCategory = category.name
                                         categoryExpanded = false
                                     }
                                 )
