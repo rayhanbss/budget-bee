@@ -278,15 +278,15 @@ fun DashboardScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    allTargets.take(3).forEach { item ->
-                        CompactTargetCard(
-                            target = item,
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 4.dp)
-                                .fillMaxWidth(),
-                            onClick = { }
-                        )
-                    }
+//                    Target.take(3).forEach { item ->
+//                        CompactTargetCard(
+//                            target = item,
+//                            modifier = Modifier
+//                                .padding(horizontal = 16.dp, vertical = 4.dp)
+//                                .fillMaxWidth(),
+//                            onClick = { }
+//                        )
+//                    }
                 }
             }
         }
