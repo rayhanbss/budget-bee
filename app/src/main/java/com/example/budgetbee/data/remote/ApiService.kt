@@ -8,8 +8,10 @@ import com.example.budgetbee.data.request.TargetRequest
 import com.example.budgetbee.data.request.TransactionRequest
 import com.example.budgetbee.data.response.GetAllCategoryResponse
 import com.example.budgetbee.data.response.CategoryResponse
+import com.example.budgetbee.data.response.ExpenseResponse
 import com.example.budgetbee.data.response.GetAllTargetResponse
 import com.example.budgetbee.data.response.GetAllTransactionResponse
+import com.example.budgetbee.data.response.IncomeResponse
 import com.example.budgetbee.data.response.SingleCategoryResponse
 import com.example.budgetbee.data.response.SingleTransactionResponse
 import com.example.budgetbee.data.response.TargetResponse
@@ -76,6 +78,22 @@ interface ApiService {
         @Path("transactionId") transactionId: String,
         @Header("Authorization") token: String
     ): Response<Unit>
+
+    //Income and Expense endpoints -----------------------------------------------------------------
+    @GET("users/{userId}/income")
+    @Headers("Content-Type: application/json")
+    suspend fun getAllIncome(
+        @Path("userId") userId: String,
+        @Header("Authorization") token: String
+    ): Response<IncomeResponse>
+
+    @GET("users/{userId}/expense")
+    @Headers("Content-Type: application/json")
+    suspend fun getAllExpense(
+        @Path("userId") userId: String,
+        @Header("Authorization") token: String
+    ): Response<ExpenseResponse>
+
 
     //Target endpoints -----------------------------------------------------------------------------
     @GET("users/{userId}/targets")

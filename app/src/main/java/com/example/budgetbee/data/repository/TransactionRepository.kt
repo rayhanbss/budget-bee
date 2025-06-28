@@ -60,7 +60,12 @@ class TransactionRepository(context: Context) {
         "Bearer $token"
     )
 
-
     suspend fun deleteTransaction(userId: String, transactionId: String, token: String) =
         RetrofitClient.apiService.deleteTransaction(userId, transactionId, "Bearer $token")
+
+    suspend fun getAllIncome(userId: String, token: String) =
+        RetrofitClient.apiService.getAllIncome(userId,  "Bearer $token")
+
+    suspend fun getAllExpense(userId: String, token: String) =
+        RetrofitClient.apiService.getAllExpense(userId,  "Bearer $token")
 }

@@ -23,6 +23,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -50,12 +53,14 @@ fun DashboardScreen(
 ) {
     val userState = userViewModel.userState.collectAsState()
     val user = userState.value
-    val accountBalance = 999999.00
-    val income = 1000000.00
-    val expense = 100000.00
+    val income = transactionViewModel.income
+    val expense = transactionViewModel.expense
+    val profit by mutableStateOf(income - expense)
 
     LaunchedEffect(user, tokenString) {
         transactionViewModel.getAllTransactions(user, tokenString)
+        transactionViewModel.getIncome(user, tokenString)
+        transactionViewModel.getExpense(user, tokenString)
     }
     val transactionList = transactionViewModel.transactions
     val filteredTransactions = transactionList.sortedByDescending { it.dateTransaction }
@@ -125,7 +130,7 @@ fun DashboardScreen(
                                     .padding(18.dp, 12.dp, 18.dp, 0.dp)
                             )
                             Text(
-                                text = "Rp. $accountBalance",
+                                text = "Rp. $profit",
                                 color = White,
                                 fontSize = 36.sp,
                                 fontWeight = FontWeight.Bold,
@@ -137,7 +142,7 @@ fun DashboardScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp, 0.dp),
+                                .padding(16.dp, 0.dp, 16.dp, 16.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ){
@@ -202,32 +207,12 @@ fun DashboardScreen(
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text(
-                                        text = "Rp. $income",
+                                        text = "Rp. $expense",
                                         color = Black,
                                         fontSize = 14.sp,
                                     )
                                 }
                             }
-                        }
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ){
-                            Text(
-                                text = "Profit",
-                                color = Black,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "Rp. ${income - expense}",
-                                color = if (income - expense >= 0) Success else Failed,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
                         }
                     }
                 }

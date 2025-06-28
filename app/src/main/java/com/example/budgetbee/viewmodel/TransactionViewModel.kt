@@ -6,6 +6,8 @@ import com.example.budgetbee.data.repository.TransactionRepository
 import androidx.lifecycle.viewModelScope
 import com.example.budgetbee.data.model.User
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.budgetbee.data.model.Transaction
@@ -23,6 +25,9 @@ class TransactionViewModel(
         private set
     var isTransactionCreated by mutableStateOf(false)
     var isTransactionUpdated by mutableStateOf(false)
+
+    var income by mutableIntStateOf(0)
+    var expense by mutableIntStateOf(0)
 
     fun getAllTransactions(user: User?, token: String?) {
         viewModelScope.launch {
@@ -180,6 +185,70 @@ class TransactionViewModel(
             } catch (e: Exception) {
                 errorMessage = e.message
                 Log.e("TransactionViewModel", "Exception deleting transaction: ${e.message}")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun getIncome(user: User?, token: String?) {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+
+            if (user?.id == null || token.isNullOrBlank()) {
+                errorMessage = "User ID or token is null"
+                Log.e("TransactionViewModel", "User ID or token is null. User: $user, Token: $token")
+                isLoading = false
+                return@launch
+            }
+
+            try {
+                val response = transactionRepository.getAllIncome(user.id.toString(), token)
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    income = body?.income ?: 0
+                    Log.i("TransactionViewModel", "Income Loaded: $income")
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    errorMessage = errorBody ?: "Unknown error"
+                    Log.e("TransactionViewModel", "Error fetching income: $errorMessage, Status: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                errorMessage = e.message
+                Log.e("TransactionViewModel", "Exception fetching income: ${e.message}")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun getExpense(user: User?, token: String?) {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+
+            if (user?.id == null || token.isNullOrBlank()) {
+                errorMessage = "User ID or token is null"
+                Log.e("TransactionViewModel", "User ID or token is null. User: $user, Token: $token")
+                isLoading = false
+                return@launch
+            }
+
+            try {
+                val response = transactionRepository.getAllExpense(user.id.toString(), token)
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    expense = body?.expense ?: 0
+                    Log.i("TransactionViewModel", "Expense Loaded: $expense")
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    errorMessage = errorBody ?: "Unknown error"
+                    Log.e("TransactionViewModel", "Error fetching expense: $errorMessage, Status: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                errorMessage = e.message
+                Log.e("TransactionViewModel", "Exception fetching expense: ${e.message}")
             } finally {
                 isLoading = false
             }
