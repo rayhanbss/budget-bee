@@ -73,15 +73,11 @@ fun TargetScreen(
     Log.i("TargetScreen", "Error message: $errorMessage")
 
     var searchQuery by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("Category") }
-    var categoryExpanded by remember { mutableStateOf(false) }
-    val categories = listOf("Kendaraan", "Gadget", "Liburan", "Pendidikan")
 
     val filteredTargets = targetList
         .filter { item ->
             val matchesQuery = searchQuery.isBlank() || item.name.contains(searchQuery, ignoreCase = true)
-            val matchesCategory = selectedCategory == "Category"
-            matchesQuery && matchesCategory
+            matchesQuery
         }
         .sortedByDescending { it.deadline }
 
@@ -119,89 +115,40 @@ fun TargetScreen(
                     color = YellowPrimary
                 )
             }
-            Column(
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text("Search Target") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp, 8.dp, 16.dp, 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    label = { Text("Search Target") },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Black,
-                        focusedLabelColor = Black,
-                        unfocusedLabelColor = Gray,
-                        focusedTextColor = Black,
-                        unfocusedTextColor = Black,
-                    ),
-                    singleLine = true,
-                    trailingIcon = {
-                        if (searchQuery.isNotEmpty()) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Clear",
-                                tint = Black,
-                                modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .clickable { searchQuery = "" }
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Search",
-                                tint = Black
-                            )
-                        }
-                    }
-                )
-
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    OutlinedButton(
-                        onClick = { categoryExpanded = true },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(4.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = White,
-                            contentColor = Black
-                        ),
-                        contentPadding = PaddingValues(horizontal = 8.dp)
-                    ) {
-                        Text(
-                            selectedCategory,
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Start,
-                            fontSize = 12.sp
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Black,
+                    focusedLabelColor = Black,
+                    unfocusedLabelColor = Gray,
+                    focusedTextColor = Black,
+                    unfocusedTextColor = Black,
+                ),
+                singleLine = true,
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Clear",
+                            tint = Black,
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .clickable { searchQuery = "" }
                         )
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown Category")
-                    }
-                    DropdownMenu(
-                        expanded = categoryExpanded,
-                        onDismissRequest = { categoryExpanded = false },
-                        modifier = Modifier
-                            .background(White)
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("Reset", fontSize = 12.sp, color = Black) },
-                            onClick = {
-                                selectedCategory = "Category"
-                                categoryExpanded = false
-                            }
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search",
+                            tint = Black
                         )
-                        categories.forEach { category ->
-                            DropdownMenuItem(
-                                text = { Text(category, fontSize = 12.sp, color = Black) },
-                                onClick = {
-                                    selectedCategory = category
-                                    categoryExpanded = false
-                                }
-                            )
-                        }
                     }
                 }
-            }
+            )
         }
         LazyColumn(
             modifier = Modifier
@@ -212,7 +159,7 @@ fun TargetScreen(
         ) {
             if (isLoading) {
                 item {
-                    Text("Loading...", modifier = Modifier.padding(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             } else if (errorMessage != null) {
                 item {

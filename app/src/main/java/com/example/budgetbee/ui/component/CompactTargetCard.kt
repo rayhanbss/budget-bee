@@ -27,7 +27,7 @@ fun CompactTargetCard(
     onClick: () -> Unit
 ) {
     val progress = if (target.amountNeeded > 0) {
-        target.amountCollected.toFloat() / target.amountNeeded
+        (target.amountCollected.toDouble() / target.amountNeeded).coerceIn(0.0, 1.0).toFloat()
     } else {
         0f
     }
@@ -61,11 +61,15 @@ fun CompactTargetCard(
                 )
             }
             Spacer(modifier = Modifier.height(6.dp))
-            val progress = if (target.amountNeeded > 0) {
-                (target.amountCollected / target.amountNeeded).coerceIn(0.0, 1.0)
-            } else {
-                0.0
-            }.toFloat()
+            LinearProgressIndicator(
+                progress = { progress },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp),
+                color = YellowPrimary,
+                trackColor = YellowTertiary,
+                strokeCap = StrokeCap.Round,
+            )
         }
     }
 }
