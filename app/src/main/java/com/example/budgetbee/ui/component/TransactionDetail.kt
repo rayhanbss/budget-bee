@@ -171,7 +171,7 @@ fun TransactionDetail (
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = CurrencyUtils.format(transaction.amount),
+                    text = CurrencyUtils.fullformat(transaction.amount),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                     modifier = Modifier

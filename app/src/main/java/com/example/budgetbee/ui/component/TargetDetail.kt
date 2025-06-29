@@ -185,8 +185,7 @@ fun TargetDetail(
                     )
                     Text(
                         text =
-                            CurrencyUtils.format(target.amountCollected) +
-                                    " / ${CurrencyUtils.format(target.amountNeeded)}",
+                            "${CurrencyUtils.fullformat(target.amountCollected)} / ${CurrencyUtils.fullformat(target.amountNeeded)}",
                         fontSize = 14.sp,
                     )
                 }

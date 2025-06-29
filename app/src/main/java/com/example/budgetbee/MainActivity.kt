@@ -118,7 +118,7 @@ class MainActivity : ComponentActivity() {
                         transactionViewModel.getAllTransactions(user, tokenString)
                         categoryViewModel.getAllCategories(user, tokenString)
                     }
-                    delay(1300)
+                    delay(1500)
                     isCheckingAuth.value = false
                 }
 

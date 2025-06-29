@@ -126,6 +126,7 @@ class TargetViewModel (
 
                 if (response.isSuccessful) {
                     Log.i("TargetViewModel", "Target updated successfully")
+                    Log.i("TargetViewModel", "Response body: ${response.body()}")
                     getAllTarget(user, token)
                     isTargetUpdated = true
                 } else {

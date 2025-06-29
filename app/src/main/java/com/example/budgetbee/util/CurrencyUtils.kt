@@ -15,12 +15,17 @@ object CurrencyUtils {
         val absValue = abs(value)
         val locale = Locale("in", "ID")
         val formatted = when {
-            absValue >= 1_000_000_000_000_000 -> String.format(locale, "Rp %,.0f Kuadriliun", absValue / 1_000_000_000_000_000)
-            absValue >= 1_000_000_000_000 -> String.format(locale, "Rp %,.0f Triliun", absValue / 1_000_000_000_000)
-            absValue >= 1_000_000_000 -> String.format(locale, "Rp %,.0f Miliar", absValue / 1_000_000_000)
-            absValue >= 1_000_000 -> String.format(locale, "Rp %,.0f Juta", absValue / 1_000_000)
+            absValue >= 1_000_000_000_000_000 -> String.format(locale, "Rp %,.1f Kuadriliun", absValue / 1_000_000_000_000_000)
+            absValue >= 1_000_000_000_000 -> String.format(locale, "Rp %,.1f Triliun", absValue / 1_000_000_000_000)
+            absValue >= 1_000_000_000 -> String.format(locale, "Rp %,.1f Miliar", absValue / 1_000_000_000)
+            absValue >= 1_000_000 -> String.format(locale, "Rp %,.1f Juta", absValue / 1_000_000)
             else -> String.format(locale, "Rp %,.2f", absValue)
         }
         return if (value < 0) "- $formatted" else formatted
+    }
+    fun fullformat(value: Double): String{
+        val absValue = abs(value)
+        val locale = Locale("in", "ID")
+        return String.format(locale, "Rp %,.2f", absValue)
     }
 }
