@@ -1,5 +1,4 @@
-# BudgetBee
-
+<h1 align="center">BudgetBee</h1>
 <p align="center">
   <img src="./Logosvg.svg" alt="BudgetBee Logo" width="150" />
 </p>
