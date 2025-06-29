@@ -22,6 +22,8 @@ class TargetViewModel (
     private set
     var errorMessage by mutableStateOf<String?>(null)
     private set
+    var isTargetCreated by mutableStateOf(false)
+    var isTargetUpdated by mutableStateOf(false)
 
     fun getAllTarget(user: User?, token: String?) {
         viewModelScope.launch {
@@ -52,7 +54,45 @@ class TargetViewModel (
                 Log.e("TargetViewModel", "Exception fetching targets: ${e.message}")
             } finally {
                 isLoading = false
+            }
+        }
+    }
 
+    fun createTarget(
+        userId: String?,
+        name: String,
+        amountNeeded: Double,
+        deadline: String,
+        token: String?) {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+            isTargetCreated = false
+
+            try {
+                Log.i("TargetViewModel", "Creating target for user: $userId, token: $token, name:$name, amountNeeded: $amountNeeded, deadline: $deadline")
+                val response = targetRepository.createTarget(
+                    userId = userId ?: "",
+                    name = name,
+                    amountNeeded = amountNeeded,
+                    deadline = deadline,
+                    token = token?: ""
+                )
+
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    Log.i("TargetViewModel", "Target posted successfully: $body")
+                    isTargetCreated = true
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    errorMessage = errorBody ?: "Unknown error"
+                    Log.e("TargetViewModel", "Error posting target: $errorMessage, Status: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                errorMessage = e.message
+                Log.e("TargetViewModel", "Exception posting target: ${e.message}")
+            } finally {
+                isLoading = false
             }
         }
     }
