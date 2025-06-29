@@ -1,5 +1,10 @@
 # BudgetBee
 
+<p align="center">
+  <!-- Embed app logo; for best GitHub rendering, convert `app/src/main/res/drawable/logosvg.xml` to an SVG file named `logosvg.svg` in the repo root -->
+  <img src="./logosvg.svg" alt="BudgetBee Logo" width="150" />
+</p>
+
 BudgetBee merupakan aplikasi berbasis Android untuk membantu anda untuk mengelola keuangan pribadi dengan memberikan fitur personalisasi yaitu dashboard berisikan rekapan semua aktivitas keuangan dan tracking target.
 
 ## 🚀 Fitur Utama
@@ -54,3 +59,4 @@ const val BASE_URL = "http://10.0.2.2:8080/"
 
 | [<img src="https://github.com/rayhanbss.png" width="100px"><br><sub><b>Rayhan Bagus Sadewa</b></sub>](https://github.com/rayhanbss) | [<img src="https://github.com/safinasabil.png" width="100px"><br><sub><b>Safina Sabil</b></sub>](https://github.com/safinasabil) | [<img src="https://github.com/syvlnl.png" width="100px"><br><sub><b>Syavela N. Liset</b></sub>](https://github.com/syvlnl) | [<img src="https://github.com/Velelen.png" width="100px"><br><sub><b>Velen Novanti</b></sub>](https://github.com/Velelen) |
 | :---: | :---: | :---: | :---: |
+
