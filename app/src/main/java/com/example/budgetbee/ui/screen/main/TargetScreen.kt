@@ -1,7 +1,9 @@
 package com.example.budgetbee.ui.screen.main
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -9,16 +11,23 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Flight
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Laptop
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -27,135 +36,152 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.budgetbee.R
-import com.example.budgetbee.data.model.TargetItem
-import com.example.budgetbee.data.model.allTargets
-import com.example.budgetbee.data.model.recommendedTargets
+import com.example.budgetbee.data.model.Target
+import com.example.budgetbee.data.model.User
 import com.example.budgetbee.ui.component.CategoryChip
 import com.example.budgetbee.ui.component.CompactTargetCard
 import com.example.budgetbee.ui.component.MiniTargetCard
+import com.example.budgetbee.ui.theme.Black
 import com.example.budgetbee.ui.theme.BudgetBeeTheme
 import com.example.budgetbee.ui.theme.White
 import com.example.budgetbee.ui.theme.YellowPrimary
+import com.example.budgetbee.viewmodel.TargetViewModel
+import com.example.budgetbee.viewmodel.TransactionViewModel
 
 @Composable
-fun TargetScreen() {
-    val categories = listOf("All", "Kendaraan", "Gadget", "Liburan", "Pendidikan")
+fun TargetScreen(
+    targetViewModel: TargetViewModel,
+    user: User?,
+    token: String?
+) {
 
-    var selectedCategory by remember { mutableStateOf("All") }
+    LaunchedEffect(user, token) {
+        if (user != null && token != null) {
+            Log.i("TargetScreen", "Calling getAllTarget with user: ${user.id}, token available: ${token.isNotBlank()}")
+            targetViewModel.getAllTarget(user, token)
+        } else {
+            Log.w("TargetScreen", "User or token is null - user: $user, token: $token")
+        }
+    }
 
-    val filteredTargets = if (selectedCategory == "All") allTargets
-    else allTargets.filter { it.category == selectedCategory }
+    val isLoading = targetViewModel.isLoading
+    val targetList = targetViewModel.targets
+    val errorMessage = targetViewModel.errorMessage
 
-    LazyColumn(
+    Log.i("TargetScreen", "Target list size: ${targetList.size}")
+    Log.i("TargetScreen", "Is loading: $isLoading")
+    Log.i("TargetScreen", "Error message: $errorMessage")
+
+    var searchQuery by remember { mutableStateOf("") }
+
+    val filteredTargets = targetList
+        .filter { item ->
+            val matchesQuery = searchQuery.isBlank() || item.name.contains(searchQuery, ignoreCase = true)
+            matchesQuery
+        }
+        .sortedByDescending { it.deadline }
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(White)
-            .padding(bottom = 16.dp)
+            .background(White),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        item {
-            Box(
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .shadow(2.dp, shape = RoundedCornerShape(12.dp))
+                .background(White),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp),
-                contentAlignment = Alignment.Center
+                    .padding(16.dp, 16.dp, 16.dp, 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
-                Image(
-                    painter = painterResource(R.drawable.header),
-                    contentDescription = "Header",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
+                Text(
+                    text = "My ",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Black
                 )
                 Text(
-                    text = "Set Target",
-                    textAlign = TextAlign.Center,
-                    color = YellowPrimary,
-                    fontSize = 38.sp,
+                    text = "Target",
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth()
+                    color = YellowPrimary
                 )
             }
-        }
-
-        item {
-            Text(
-                text = "Category",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = YellowPrimary,
-                modifier = Modifier.padding(32.dp, 4.dp)
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text("Search Target") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp, 8.dp, 16.dp, 16.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Black,
+                    focusedLabelColor = Black,
+                    unfocusedLabelColor = Gray,
+                    focusedTextColor = Black,
+                    unfocusedTextColor = Black,
+                ),
+                singleLine = true,
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Clear",
+                            tint = Black,
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .clickable { searchQuery = "" }
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search",
+                            tint = Black
+                        )
+                    }
+                }
             )
         }
-
-        item {
-            LazyRow(
-                contentPadding = PaddingValues(32.dp, 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(categories) { category ->
-                    CategoryChip(
-                        name = category,
-                        selected = category == selectedCategory,
-                        onClick = { selectedCategory = category }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            contentPadding = PaddingValues(bottom = 16.dp)
+        ) {
+            if (isLoading) {
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            } else if (errorMessage != null) {
+                item {
+                    Text(
+                        text = errorMessage,
+                        color = Color.Red,
+                        modifier = Modifier.padding(16.dp)
                     )
                 }
-            }
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        item {
-            Text(
-                text = "My Target",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = YellowPrimary,
-                modifier = Modifier.padding(32.dp, 4.dp)
-            )
-        }
-
-        items(filteredTargets) { target ->
-            CompactTargetCard(
-                modifier = Modifier.padding(32.dp, 4.dp),
-                target = target,
-                onClick = {
-                    // TODO: aksi klik target card
+            } else if (filteredTargets.isEmpty()) {
+                item {
+                    Text(
+                        text = "No targets found",
+                        modifier = Modifier.padding(16.dp)
+                    )
                 }
-            )
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(24.dp))
-        }
-
-        item {
-            Text(
-                text = "Recommendation Target",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = YellowPrimary,
-                modifier = Modifier.padding(32.dp, 4.dp)
-            )
-        }
-
-        item {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier
-                    .heightIn(min = 200.dp, max = 500.dp)
-                    .padding(horizontal = 32.dp),
-                contentPadding = PaddingValues(4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(recommendedTargets) { target ->
-                    MiniTargetCard(
-                        target = target,
+            } else {
+                items(filteredTargets) { item ->
+                    CompactTargetCard(
+                        target = item,
+                        modifier = Modifier.padding(4.dp),
                         onClick = {
-                            // TODO: aksi klik mini target card
                         }
                     )
                 }
@@ -163,19 +189,5 @@ fun TargetScreen() {
         }
     }
 }
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun TargetScreenPreview() {
-    BudgetBeeTheme {
-        TargetScreen()
-    }
-}
-
-
-
-
-
-
 
 

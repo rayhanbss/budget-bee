@@ -19,12 +19,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.budgetbee.data.model.TargetItem
+import com.example.budgetbee.data.model.Target
 import com.example.budgetbee.ui.theme.Black
 import com.example.budgetbee.ui.theme.YellowPrimary
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
-fun MiniTargetCard(target: TargetItem, onClick: () -> Unit) {
+fun MiniTargetCard(target: Target, onClick: () -> Unit) {
+    val formattedAmount = formatCurrency(target.amountNeeded)
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -39,11 +43,8 @@ fun MiniTargetCard(target: TargetItem, onClick: () -> Unit) {
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Ikon
-            target.icon()
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Nama target
+//            target.icon()
+//            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = target.name,
                 fontWeight = FontWeight.Bold,
@@ -55,7 +56,7 @@ fun MiniTargetCard(target: TargetItem, onClick: () -> Unit) {
 
             // Nominal
             Text(
-                text = target.amount,
+                text = formattedAmount,
                 fontSize = 12.sp,
                 color = Black,
                 fontWeight = FontWeight.Medium,
@@ -64,4 +65,9 @@ fun MiniTargetCard(target: TargetItem, onClick: () -> Unit) {
             )
         }
     }
+}
+
+fun formatCurrency(amount: Double): String {
+    val formatter = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+    return formatter.format(amount)
 }

@@ -134,21 +134,16 @@ fun TransactionDetail (
                     modifier = Modifier
                         .padding(16.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.Bottom,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ){
-                        Text(
-                            text = transaction.name,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                        )
-                        Text(
-                            text = transaction.categoryName,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 14.sp,
-                        )
-                    }
+                    Text(
+                        text = transaction.name,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                    )
+                    Text(
+                        text = transaction.categoryName,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                    )
                     Text(
                         text = transaction.dateTransaction,
                         fontWeight = FontWeight.Normal,

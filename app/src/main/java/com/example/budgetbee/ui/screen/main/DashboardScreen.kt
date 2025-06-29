@@ -31,7 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.budgetbee.data.model.allTargets
 import com.example.budgetbee.ui.component.CompactTargetCard
 import com.example.budgetbee.ui.component.TransactionRow
 import com.example.budgetbee.ui.theme.Black
@@ -278,15 +277,15 @@ fun DashboardScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    allTargets.take(3).forEach { item ->
-                        CompactTargetCard(
-                            target = item,
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 4.dp)
-                                .fillMaxWidth(),
-                            onClick = { }
-                        )
-                    }
+//                    Target.take(3).forEach { item ->
+//                        CompactTargetCard(
+//                            target = item,
+//                            modifier = Modifier
+//                                .padding(horizontal = 16.dp, vertical = 4.dp)
+//                                .fillMaxWidth(),
+//                            onClick = { }
+//                        )
+//                    }
                 }
             }
         }

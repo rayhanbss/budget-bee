@@ -4,11 +4,15 @@ import com.example.budgetbee.data.request.CategoryRequest
 import com.example.budgetbee.data.response.AuthResponse
 import com.example.budgetbee.data.request.LoginRequest
 import com.example.budgetbee.data.request.RegisterRequest
+import com.example.budgetbee.data.request.TargetRequest
 import com.example.budgetbee.data.request.TransactionRequest
 import com.example.budgetbee.data.response.GetAllCategoryResponse
+import com.example.budgetbee.data.response.CategoryResponse
+import com.example.budgetbee.data.response.GetAllTargetResponse
 import com.example.budgetbee.data.response.GetAllTransactionResponse
 import com.example.budgetbee.data.response.SingleCategoryResponse
 import com.example.budgetbee.data.response.SingleTransactionResponse
+import com.example.budgetbee.data.response.TargetResponse
 import com.example.budgetbee.data.response.TransactionResponse
 import com.example.budgetbee.data.response.UserResponse
 import retrofit2.Response
@@ -74,6 +78,45 @@ interface ApiService {
     ): Response<Unit>
 
     //Target endpoints -----------------------------------------------------------------------------
+    @GET("users/{userId}/targets")
+    @Headers("Content-Type: application/json")
+    suspend fun getAllTargets(
+        @Path("userId") userId: String,
+        @Header("Authorization") token: String
+    ): Response<GetAllTargetResponse>
+
+    @GET("userID/{userId}/targets")
+    @Headers("Content-Type: application/json")
+    suspend fun getTargetById(
+        @Path("userId") userId: String,
+        @Path("targetId") targetId: String,
+        @Header("Authorization") token: String
+    ): Response<TargetResponse>
+
+    @POST("users/{userId}/targets")
+    @Headers("Content-Type: application/json")
+    suspend fun createTarget(
+        @Path("userId") userId: String,
+        @Body target: TargetRequest,
+        @Header("Authorization") token: String
+    ): Response<TargetResponse>
+
+    @PATCH("users/{userId}/targets")
+    @Headers("Content-Type: application/json")
+    suspend fun updateTarget(
+        @Path("userId") userId: String,
+        @Path("targetId") targetId: String,
+        @Body target: TargetRequest,
+        @Header("Authorization") token: String
+    ): Response<TargetResponse>
+
+    @DELETE("users/{userId}/targets")
+    @Headers("Content-Type: application/json")
+    suspend fun deleteTarget(
+        @Path("userId") userId: String,
+        @Path("targetId") targetId: String,
+        @Header("Authorization") token: String
+    ): Response<TargetResponse>
 
     //Category endpoints ---------------------------------------------------------------------------
     @GET("users/{userId}/categories")

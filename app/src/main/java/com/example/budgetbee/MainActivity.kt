@@ -29,6 +29,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.budgetbee.data.repository.AuthRepository
 import com.example.budgetbee.data.repository.CategoryRepository
+import com.example.budgetbee.data.repository.TargetRepository
 import com.example.budgetbee.data.repository.TokenRepository
 import com.example.budgetbee.data.repository.TransactionRepository
 import com.example.budgetbee.data.repository.UserRepository
@@ -39,12 +40,15 @@ import com.example.budgetbee.ui.screen.main.*
 import com.example.budgetbee.ui.theme.*
 import com.example.budgetbee.viewmodel.AuthViewModel
 import com.example.budgetbee.viewmodel.AuthViewModelFactory
+import com.example.budgetbee.viewmodel.TargetViewModel
+import com.example.budgetbee.viewmodel.TargetViewModelFactory
 import com.example.budgetbee.viewmodel.CategoryViewModel
 import com.example.budgetbee.viewmodel.CategoryViewModelFactory
 import com.example.budgetbee.viewmodel.TransactionViewModel
 import com.example.budgetbee.viewmodel.TransactionViewModelFactory
 import com.example.budgetbee.viewmodel.UserViewModel
 import com.example.budgetbee.viewmodel.UserViewModelFactory
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -65,6 +69,7 @@ class MainActivity : ComponentActivity() {
                 val categoryRepository = remember { CategoryRepository(context) }
                 val authRepository = remember { AuthRepository(context) }
                 val transactionRepository = remember { TransactionRepository(context) }
+                val targetRepository = remember { TargetRepository(context) }
 
 
                 // Initialize ViewModels with factories
@@ -86,6 +91,9 @@ class MainActivity : ComponentActivity() {
 
                 val categoryViewModelFactory = remember { CategoryViewModelFactory(context) }
                 val categoryViewModel: CategoryViewModel = viewModel(factory = categoryViewModelFactory)
+
+                val targetFactory = remember { TargetViewModelFactory(targetRepository) }
+                val targetViewModel: TargetViewModel = viewModel(factory = targetFactory)
 
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -110,7 +118,7 @@ class MainActivity : ComponentActivity() {
                         transactionViewModel.getAllTransactions(user, tokenString)
                         categoryViewModel.getAllCategories(user, tokenString)
                     }
-                    kotlinx.coroutines.delay(1300)
+                    delay(1300)
                     isCheckingAuth.value = false
                 }
 
@@ -175,9 +183,17 @@ class MainActivity : ComponentActivity() {
                             navController = navController,
                             startDestination = "launch"
                         ) {
+                            composable("dashboard") { DashboardScreen(
+                                userViewModel,
+                                transactionViewModel = transactionViewModel,
+                                tokenString = tokenString,
+                                navController = navController
+                            ) }
+                            composable("transaction") { TransactionScreen(transactionViewModel, user, tokenString, navController, categoryList) }
+                            composable("target") { TargetScreen(targetViewModel, user, tokenString) }
                             composable("dashboard") { DashboardScreen(userViewModel, transactionViewModel, tokenString, navController) }
                             composable("transaction") { TransactionScreen(transactionViewModel, user, tokenString, navController, categoryList) }
-                            composable("target") { TargetScreen() }
+                            composable("target") { TargetScreen(targetViewModel, user, tokenString) }
                             composable("profile") { ProfileScreen(context, navController, authViewModel, userViewModel) }
                             composable("login") { LoginScreen(navController, authViewModel) }
                             composable("register") { RegisterScreen(navController, authViewModel) }
