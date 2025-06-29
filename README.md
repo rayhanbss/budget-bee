@@ -49,7 +49,7 @@ const val BASE_URL = "http://10.0.2.2:8080/"
 
 1. Clone repository ini:
    ```
-   git clone https://github.com/yourusername/BudgetBee.git
+   git clone https://github.com/rayhanbss/budget-bee
    ```
 2. Buka proyek di Android Studio.
 3. Sinkronisasi Gradle dan tunggu proses build selesai.
