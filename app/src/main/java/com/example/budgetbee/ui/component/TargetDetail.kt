@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,14 +16,12 @@ import androidx.compose.material.icons.filled.ArrowOutward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,30 +30,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import com.example.budgetbee.data.model.Transaction
-import com.example.budgetbee.data.model.User
+import com.example.budgetbee.data.model.Target
 import com.example.budgetbee.ui.theme.Black
 import com.example.budgetbee.ui.theme.Failed
 import com.example.budgetbee.ui.theme.Success
 import com.example.budgetbee.ui.theme.White
 import com.example.budgetbee.ui.theme.YellowPrimary
+import com.example.budgetbee.ui.theme.YellowTertiary
 import com.example.budgetbee.util.CurrencyUtils
-import com.example.budgetbee.viewmodel.TransactionViewModel
+import java.util.Currency
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TransactionDetail (
-    transaction: Transaction,
-    showBottomSheet: MutableState<Boolean>,
-    navController: NavHostController,
-    transactionViewModel: TransactionViewModel,
-    user: User?,
-    tokenString: String? = null
+fun TargetDetail(
+    target: Target,
+    progress: Float
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -72,7 +68,7 @@ fun TransactionDetail (
         ){
             Row{
                 Text(
-                    text = "Transaction ",
+                    text = "Target ",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Black
@@ -90,28 +86,24 @@ fun TransactionDetail (
             ) {
                 IconButton(
                     onClick = {
-                        navController.navigate("edit_transaction/${transaction.id}") {
-                            launchSingleTop = true
-                        }
-                        showBottomSheet.value = false
                     },
                     modifier = Modifier
                         .size(24.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit Transaction",
+                        contentDescription = "Edit Target",
                         tint = YellowPrimary
                     )
                 }
                 IconButton(
-                    onClick = { showDeleteDialog = true },
+                    onClick = { },
                     modifier = Modifier
                         .size(24.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete Transaction",
+                        contentDescription = "Delete Target",
                         tint = Failed
                     )
                 }
@@ -124,72 +116,46 @@ fun TransactionDetail (
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.Start
         ) {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(2.dp, shape = RoundedCornerShape(8.dp))
                     .background(White),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Column(
+                Row(
                     modifier = Modifier
-                        .padding(16.dp)
+                        .fillMaxWidth()
+                        .padding(16.dp, 16.dp, 16.dp, 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = transaction.name,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp,
-                    )
-                    Text(
-                        text = transaction.categoryName,
-                        fontWeight = FontWeight.Normal,
+                        text = target.name,
+                        fontWeight = FontWeight.Medium,
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = transaction.dateTransaction,
-                        fontWeight = FontWeight.Normal,
+                        text = target.status,
                         fontSize = 14.sp,
                     )
                 }
-                Icon(
-                    imageVector = Icons.Default.ArrowOutward,
-                    contentDescription = if (transaction.categoryIsExpense) "Expense" else "Income",
-                    tint = if (transaction.categoryIsExpense) Failed else Success,
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .size(36.dp)
-                        .rotate(if (transaction.categoryIsExpense) 0f else 180f)
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .shadow(2.dp, shape = RoundedCornerShape(8.dp))
-                    .background(White),
-                horizontalAlignment = Alignment.Start
-            ) {
-                Text(
-                    text = CurrencyUtils.format(transaction.amount),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(
-                            if (transaction.isSaving)
-                                PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp)
-                            else
-                                PaddingValues(16.dp))
-                    )
-                if (transaction.isSaving) {
+                        .padding(16.dp, 8.dp, 16.dp, 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = "Saving on ${transaction.targetName ?: "No Target"}",
-                        fontWeight = FontWeight.Normal,
+                        text = "Deadline",
                         fontSize = 14.sp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp, 4.dp, 16.dp, 16.dp))
+                    )
+                    Text(
+                        text = target.deadline.substringBefore(" "),
+                        fontSize = 14.sp,
+                    )
                 }
             }
 
@@ -200,25 +166,37 @@ fun TransactionDetail (
                     .background(White),
                 horizontalAlignment = Alignment.Start
             ) {
-                Text(
-                    text = "Notes",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp, 16.dp , 16.dp, 4.dp)
-                )
-                Text(
-                    text = transaction.note ?: "No notes available",
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp,
+                        .padding(16.dp, 16.dp, 16.dp, 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Progress",
+                        fontSize = 14.sp,
+                    )
+                    Text(
+                        text =
+                            CurrencyUtils.format(target.amountCollected) +
+                                    " / ${CurrencyUtils.format(target.amountNeeded)}",
+                        fontSize = 14.sp,
+                    )
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                LinearProgressIndicator(
+                    progress = { progress },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp, 4.dp, 16.dp, 16.dp)
+                        .padding(16.dp, 8.dp, 16.dp, 16.dp)
+                        .height(8.dp),
+                    color = YellowPrimary,
+                    trackColor = YellowTertiary,
+                    strokeCap = StrokeCap.Round,
                 )
             }
         }
-
         if (showDeleteDialog) {
             AlertDialog(
                 onDismissRequest = { showDeleteDialog = false },
@@ -230,9 +208,7 @@ fun TransactionDetail (
                 text = { Text(text = "Are you sure you want to delete this transaction?") },
                 confirmButton = {
                     TextButton(onClick = {
-                        transactionViewModel.deleteTransaction(user, tokenString, transaction.id)
-                        showBottomSheet.value = false
-                        showDeleteDialog = false
+
                     }) {
                         Text("Delete", color = Failed)
                     }

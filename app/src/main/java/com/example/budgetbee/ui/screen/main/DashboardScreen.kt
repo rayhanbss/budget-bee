@@ -1,5 +1,6 @@
 package com.example.budgetbee.ui.screen.main
 
+import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,7 +26,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -35,19 +38,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.budgetbee.ui.component.CompactTargetCard
+import com.google.accompanist.placeholder.material3.placeholder
 import com.example.budgetbee.ui.component.TransactionRow
 import com.example.budgetbee.ui.theme.Black
 import com.example.budgetbee.ui.theme.Failed
 import com.example.budgetbee.ui.theme.Success
 import com.example.budgetbee.ui.theme.White
 import com.example.budgetbee.ui.theme.YellowPrimary
+import com.example.budgetbee.viewmodel.TargetViewModel
 import com.example.budgetbee.viewmodel.TransactionViewModel
 import com.example.budgetbee.viewmodel.UserViewModel
+import com.google.accompanist.placeholder.placeholder
+import com.example.budgetbee.util.CurrencyUtils
+import java.util.Locale
+import kotlin.compareTo
+import kotlin.math.abs
 
 @Composable
 fun DashboardScreen(
     userViewModel: UserViewModel,
     transactionViewModel: TransactionViewModel,
+    targetViewModel: TargetViewModel,
     tokenString: String? = null,
     navController: NavHostController
 ) {
@@ -55,15 +66,26 @@ fun DashboardScreen(
     val user = userState.value
     val income = transactionViewModel.income
     val expense = transactionViewModel.expense
-    val profit by mutableStateOf(income - expense)
+    val profit = income - expense
+    val isMinus = profit < 0
+
+    val transactionIsLoading = transactionViewModel.isLoading
+    val targetIsLoading = targetViewModel.isLoading
 
     LaunchedEffect(user, tokenString) {
-        transactionViewModel.getAllTransactions(user, tokenString)
         transactionViewModel.getIncome(user, tokenString)
         transactionViewModel.getExpense(user, tokenString)
+        targetViewModel.getAllTarget(user, tokenString)
+        transactionViewModel.getAllTransactions(user, tokenString)
     }
+
     val transactionList = transactionViewModel.transactions
     val filteredTransactions = transactionList.sortedByDescending { it.dateTransaction }
+
+    val targetList = targetViewModel.targets
+    val filteredTargets = targetList
+        .filter { (it.status == "On Progress") }
+        .sortedByDescending { (it.deadline) }
 
     LazyColumn(
         modifier = Modifier
@@ -116,13 +138,14 @@ fun DashboardScreen(
                                 .padding(start = 16.dp, end = 16.dp)
                                 .shadow(
                                     elevation = (4.dp),
-                                    shape = RoundedCornerShape(8.dp))
+                                    shape = RoundedCornerShape(8.dp)
+                                )
                                 .background(YellowPrimary),
                             horizontalAlignment = Alignment.Start,
                             verticalArrangement = Arrangement.Center
                         ){
                             Text(
-                                text = "Account Balance",
+                                text = "This Month Profit",
                                 color = Black,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.SemiBold,
@@ -130,7 +153,7 @@ fun DashboardScreen(
                                     .padding(18.dp, 12.dp, 18.dp, 0.dp)
                             )
                             Text(
-                                text = "Rp. $profit",
+                                text = CurrencyUtils.format(profit.toDouble()),
                                 color = White,
                                 fontSize = 36.sp,
                                 fontWeight = FontWeight.Bold,
@@ -148,20 +171,21 @@ fun DashboardScreen(
                         ){
                             Row(
                                 modifier = Modifier
-                                    .height(64.dp)
+                                    .fillMaxWidth()
                                     .weight(1f)
                                     .shadow((4.dp), shape = RoundedCornerShape(8.dp))
                                     .background(White),
-                                horizontalArrangement = Arrangement.Center,
+                                horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically
                             ){
                                 Icon(
                                     imageVector = Icons.Default.ArrowOutward,
                                     contentDescription = "Income Icon",
-                                    tint = YellowPrimary,
+                                    tint = Success,
                                     modifier = Modifier
                                         .rotate(180f)
-                                        .size(48.dp)
+                                        .size(56.dp)
+                                        .padding(4.dp, 0.dp)
                                 )
                                 Column(
                                     modifier = Modifier
@@ -170,31 +194,32 @@ fun DashboardScreen(
                                     Text(
                                         text = "Income",
                                         color = Black,
-                                        fontSize = 16.sp,
+                                        fontSize = 14.sp,
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text(
-                                        text = "Rp. $income",
+                                        text = if (transactionIsLoading) "" else CurrencyUtils.format(income.toDouble()),
                                         color = Black,
-                                        fontSize = 14.sp,
+                                        fontSize = 12.sp,
                                     )
                                 }
                             }
                             Row(
                                 modifier = Modifier
-                                    .height(64.dp)
+                                    .fillMaxWidth()
                                     .weight(1f)
                                     .shadow((4.dp), shape = RoundedCornerShape(8.dp))
                                     .background(White),
-                                horizontalArrangement = Arrangement.Center,
+                                horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically
                             ){
                                 Icon(
                                     imageVector = Icons.Default.ArrowOutward,
                                     contentDescription = "Expenses Icon",
-                                    tint = YellowPrimary,
+                                    tint = Failed,
                                     modifier = Modifier
-                                        .size(48.dp)
+                                        .size(56.dp)
+                                        .padding(4.dp, 0.dp)
                                 )
                                 Column(
                                     modifier = Modifier
@@ -203,13 +228,13 @@ fun DashboardScreen(
                                     Text(
                                         text = "Expenses",
                                         color = Black,
-                                        fontSize = 16.sp,
+                                        fontSize = 14.sp,
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text(
-                                        text = "Rp. $expense",
+                                        text = if (transactionIsLoading) "" else CurrencyUtils.format(expense.toDouble()),
                                         color = Black,
-                                        fontSize = 14.sp,
+                                        fontSize = 12.sp,
                                     )
                                 }
                             }
@@ -257,20 +282,30 @@ fun DashboardScreen(
                         fontWeight = FontWeight.Bold
                     )
                 }
-                // Use a Column instead of LazyColumn for previews and better Compose preview support
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-//                    Target.take(3).forEach { item ->
-//                        CompactTargetCard(
-//                            target = item,
-//                            modifier = Modifier
-//                                .padding(horizontal = 16.dp, vertical = 4.dp)
-//                                .fillMaxWidth(),
-//                            onClick = { }
-//                        )
-//                    }
+                    if (targetIsLoading) {
+                        repeat(3) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(64.dp)
+                                    .shadow(2.dp, shape = RoundedCornerShape(8.dp))
+                                    .placeholder(visible = true, color = White, shape = RoundedCornerShape(8.dp))
+                            )
+                        }
+                    } else {
+                        filteredTargets.take(3).forEach { item ->
+                            CompactTargetCard(
+                                target = item,
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -321,14 +356,26 @@ fun DashboardScreen(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    filteredTransactions.take(3).forEach { item ->
-                        TransactionRow(
-                            item = item,
-                            navController = navController, // Replace with actual navController if available
-                            user = user,
-                            tokenString = tokenString ?: "",
-                            transactionViewModel = transactionViewModel,
-                        )
+                    if (transactionIsLoading) {
+                        repeat(3) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(64.dp)
+                                    .shadow(2.dp, shape = RoundedCornerShape(8.dp))
+                                    .placeholder(visible = true, color = White, shape = RoundedCornerShape(8.dp))
+                            )
+                        }
+                    } else {
+                        filteredTransactions.take(3).forEach { item ->
+                            TransactionRow(
+                                item = item,
+                                navController = navController,
+                                user = user,
+                                tokenString = tokenString ?: "",
+                                transactionViewModel = transactionViewModel,
+                            )
+                        }
                     }
                 }
             }

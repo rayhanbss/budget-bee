@@ -76,7 +76,7 @@ class MainActivity : ComponentActivity() {
                 val userFactory = remember { UserViewModelFactory(userRepository) }
                 val userViewModel: UserViewModel = viewModel(factory = userFactory)
 
-                val authFactory = remember { AuthViewModelFactory(authRepository, tokenRepository, categoryRepository, userRepository) }
+                val authFactory = remember { AuthViewModelFactory(authRepository, tokenRepository, userRepository) }
                 val authViewModel: AuthViewModel = viewModel(factory = authFactory)
 
                 // Collect token and user state
@@ -183,15 +183,9 @@ class MainActivity : ComponentActivity() {
                             navController = navController,
                             startDestination = "launch"
                         ) {
-                            composable("dashboard") { DashboardScreen(
-                                userViewModel,
-                                transactionViewModel = transactionViewModel,
-                                tokenString = tokenString,
-                                navController = navController
-                            ) }
                             composable("transaction") { TransactionScreen(transactionViewModel, user, tokenString, navController, categoryList) }
                             composable("target") { TargetScreen(targetViewModel, user, tokenString) }
-                            composable("dashboard") { DashboardScreen(userViewModel, transactionViewModel, tokenString, navController) }
+                            composable("dashboard") { DashboardScreen(userViewModel, transactionViewModel, targetViewModel, tokenString, navController) }
                             composable("transaction") { TransactionScreen(transactionViewModel, user, tokenString, navController, categoryList) }
                             composable("target") { TargetScreen(targetViewModel, user, tokenString) }
                             composable("profile") { ProfileScreen(context, navController, authViewModel, userViewModel) }

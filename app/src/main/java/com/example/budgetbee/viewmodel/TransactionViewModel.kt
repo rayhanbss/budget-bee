@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.budgetbee.data.model.Transaction
 import com.example.budgetbee.data.response.TransactionResponse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class TransactionViewModel(
@@ -30,7 +31,7 @@ class TransactionViewModel(
     var expense by mutableIntStateOf(0)
 
     fun getAllTransactions(user: User?, token: String?) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             isLoading = true
             errorMessage = null
 
@@ -72,7 +73,7 @@ class TransactionViewModel(
         amount: Double,
         note: String
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             isLoading = true
             errorMessage = null
             isTransactionCreated = false
@@ -121,7 +122,7 @@ class TransactionViewModel(
         amount: Double,
         note: String
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             isLoading = true
             errorMessage = null
 
@@ -162,7 +163,7 @@ class TransactionViewModel(
         token: String?,
         transactionId: String
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             isLoading = true
             errorMessage = null
 
@@ -192,7 +193,7 @@ class TransactionViewModel(
     }
 
     fun getIncome(user: User?, token: String?) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             isLoading = true
             errorMessage = null
 
@@ -224,7 +225,7 @@ class TransactionViewModel(
     }
 
     fun getExpense(user: User?, token: String?) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             isLoading = true
             errorMessage = null
 

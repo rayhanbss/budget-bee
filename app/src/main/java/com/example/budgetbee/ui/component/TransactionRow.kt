@@ -33,7 +33,9 @@ import androidx.navigation.NavHostController
 import com.example.budgetbee.data.model.User
 import com.example.budgetbee.ui.theme.Failed
 import com.example.budgetbee.ui.theme.Success
+import com.example.budgetbee.util.CurrencyUtils
 import com.example.budgetbee.viewmodel.TransactionViewModel
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,8 +66,8 @@ fun TransactionRow(
 
     Card(
         modifier = Modifier
-            .fillMaxWidth().
-            pointerInput(Unit) {
+            .fillMaxWidth()
+            .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = {
                         showBottomSheet.value = true
@@ -84,7 +86,7 @@ fun TransactionRow(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
-                modifier = Modifier,
+                modifier = Modifier.padding(start = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
@@ -110,7 +112,7 @@ fun TransactionRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ){
                 Text(
-                    text = item.amount.toString(),
+                    text = CurrencyUtils.format(item.amount),
                     fontWeight = FontWeight.Medium,
                     fontSize = 16.sp,
                     color = Black

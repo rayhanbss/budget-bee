@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.jetbrains.kotlinx.serialization.json)
+    implementation (libs.accompanist.placeholder.material3)
 //    implementation ("androidx.datastore:datastore-preferences-rxjava2:1.0.0")
 //    implementation ("androidx.datastore:datastore-preferences-rxjava3:1.0.0")
     testImplementation(libs.junit)

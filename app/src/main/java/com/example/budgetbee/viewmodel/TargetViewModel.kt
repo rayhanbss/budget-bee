@@ -10,6 +10,7 @@ import com.example.budgetbee.data.model.User
 import com.example.budgetbee.data.repository.TargetRepository
 import com.example.budgetbee.data.response.TargetResponse
 import com.example.budgetbee.data.model.Target
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -24,7 +25,7 @@ class TargetViewModel (
     private set
 
     fun getAllTarget(user: User?, token: String?) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             isLoading = true
             errorMessage = null
 

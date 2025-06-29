@@ -47,6 +47,7 @@ import com.example.budgetbee.ui.theme.White
 import com.example.budgetbee.ui.theme.YellowPrimary
 import com.example.budgetbee.viewmodel.TargetViewModel
 import com.example.budgetbee.viewmodel.TransactionViewModel
+import com.google.accompanist.placeholder.placeholder
 
 @Composable
 fun TargetScreen(
@@ -158,8 +159,14 @@ fun TargetScreen(
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
             if (isLoading) {
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
+                items(10) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(64.dp)
+                            .shadow(2.dp, shape = RoundedCornerShape(8.dp))
+                            .placeholder(visible = true, color = White, shape = RoundedCornerShape(8.dp))
+                    )
                 }
             } else if (errorMessage != null) {
                 item {
@@ -180,9 +187,6 @@ fun TargetScreen(
                 items(filteredTargets) { item ->
                     CompactTargetCard(
                         target = item,
-                        modifier = Modifier.padding(4.dp),
-                        onClick = {
-                        }
                     )
                 }
             }

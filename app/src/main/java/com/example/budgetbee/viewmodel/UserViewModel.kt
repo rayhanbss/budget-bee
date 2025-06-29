@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.budgetbee.data.model.Token
 import com.example.budgetbee.data.model.User
 import com.example.budgetbee.data.repository.UserRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +22,7 @@ class UserViewModel(
     val userState: StateFlow<User?> = _userState
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             userRepository.getUser.collect {
                 _userState.value = it
             }
@@ -30,7 +31,7 @@ class UserViewModel(
 
     val remoteSuccess = mutableStateOf(false)
     fun getUserRemote(userId: String, token: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 Log.i("UserViewModel", "Fetching user with ID: $userId and token: $token")
                 val response = userRepository.getUserRemote(userId, token)

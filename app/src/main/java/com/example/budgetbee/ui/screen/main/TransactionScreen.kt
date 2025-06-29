@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,6 +50,7 @@ import com.example.budgetbee.ui.theme.Black
 import com.example.budgetbee.ui.theme.White
 import com.example.budgetbee.ui.theme.YellowPrimary
 import com.example.budgetbee.viewmodel.TransactionViewModel
+import com.google.accompanist.placeholder.placeholder
 
 val DropdownBackground = White
 val TextColorPrimary = Black
@@ -249,14 +251,26 @@ fun TransactionScreen(
                                     transactionTypeExpanded = false
                                 }
                             )
-                            transactionTypes.forEach { type ->
-                                DropdownMenuItem(
-                                    text = { Text(type, fontSize = 12.sp, color = Color.Black) },
-                                    onClick = {
-                                        selectedTransactionType = type
-                                        transactionTypeExpanded = false
-                                    }
-                                )
+                            if (isLoading) {
+                                repeat(10) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(64.dp)
+                                            .shadow(2.dp, shape = RoundedCornerShape(8.dp))
+                                            .placeholder(visible = true, color = White, shape = RoundedCornerShape(8.dp))
+                                    )
+                                }
+                            }else{
+                                transactionTypes.forEach { type ->
+                                    DropdownMenuItem(
+                                        text = { Text(type, fontSize = 12.sp, color = Color.Black) },
+                                        onClick = {
+                                            selectedTransactionType = type
+                                            transactionTypeExpanded = false
+                                        }
+                                    )
+                                }
                             }
                         }
                     }

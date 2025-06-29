@@ -10,13 +10,12 @@ import com.example.budgetbee.data.repository.UserRepository
 class AuthViewModelFactory(
     private val repository: AuthRepository,
     private val tokenRepository: TokenRepository,
-    private val categoryRepository: CategoryRepository,
     private val userRepository: UserRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return AuthViewModel(repository, tokenRepository, categoryRepository, userRepository) as T
+            return AuthViewModel(repository, tokenRepository, userRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

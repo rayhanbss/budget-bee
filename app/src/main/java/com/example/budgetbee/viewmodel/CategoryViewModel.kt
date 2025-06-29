@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import com.example.budgetbee.data.model.Category
 import com.example.budgetbee.data.model.User
 import com.example.budgetbee.data.repository.CategoryRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CategoryViewModel(
@@ -24,7 +25,7 @@ class CategoryViewModel(
         internal set
 
     fun getAllCategories(user: User?, token: String?) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             isLoading = true
             errorMessage = null
 
@@ -61,7 +62,7 @@ class CategoryViewModel(
     }
 
     fun createCategory(user: User?, name: String, isExpense: Boolean, token: String?) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             isLoading = true
             errorMessage = null
             isCategoryCreated = false

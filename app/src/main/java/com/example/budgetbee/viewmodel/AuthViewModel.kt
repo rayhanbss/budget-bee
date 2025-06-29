@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.budgetbee.data.model.Token
-import com.example.budgetbee.data.model.User
 import com.example.budgetbee.data.response.AuthResponse
 import com.example.budgetbee.data.repository.AuthRepository
 import com.example.budgetbee.data.repository.CategoryRepository
@@ -13,11 +12,11 @@ import com.example.budgetbee.data.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
 
 class AuthViewModel (
         private val authRepository: AuthRepository,
         private val tokenRepository: TokenRepository,
-        private val categoryRepository: CategoryRepository,
         private val userRepository: UserRepository
     ): ViewModel() {
 
@@ -31,7 +30,7 @@ class AuthViewModel (
     val tokenState: StateFlow<Token?> = _tokenState
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             tokenRepository.getToken.collect {
                 _tokenState.value = it
             }
@@ -39,7 +38,7 @@ class AuthViewModel (
     }
 
     fun login(email: String, password: String, rememberMe: Boolean){
-        viewModelScope.launch{
+        viewModelScope.launch(Dispatchers.IO){
             // Reset errors before login
             emailError.value = null
             passwordError.value = null
@@ -109,7 +108,7 @@ class AuthViewModel (
     }
 
     fun register(name: String, email: String, password: String, rememberMe: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             // Reset errors before registration
             emailError.value = null
             passwordError.value = null
@@ -188,7 +187,7 @@ class AuthViewModel (
         }
 
     fun logout() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 val tokenValue = _tokenState.value?.value
                 Log.i("AuthViewModel", "Logging out with token: $tokenValue")
