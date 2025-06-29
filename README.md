@@ -53,4 +53,4 @@ const val BASE_URL = "http://10.0.2.2:8080/"
 ## 👩‍💻 Tim Pengembang
 
 | [<img src="https://github.com/rayhanbss.png" width="100px"><br><sub><b>Rayhan Bagus Sadewa</b></sub>](https://github.com/rayhanbss) | [<img src="https://github.com/safinasabil.png" width="100px"><br><sub><b>Safina Sabil</b></sub>](https://github.com/safinasabil) | [<img src="https://github.com/syvlnl.png" width="100px"><br><sub><b>Syavela N. Liset</b></sub>](https://github.com/syvlnl) | [<img src="https://github.com/Velelen.png" width="100px"><br><sub><b>Velen Novanti</b></sub>](https://github.com/Velelen) |
-
+| :---: | :---: | :---: | :---: |
