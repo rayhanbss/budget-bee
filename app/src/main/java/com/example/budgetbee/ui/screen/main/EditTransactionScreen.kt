@@ -1,5 +1,6 @@
 package com.example.budgetbee.ui.screen.main
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -41,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.budgetbee.data.model.Category
+import com.example.budgetbee.data.model.Target
 import com.example.budgetbee.data.model.Transaction
 import com.example.budgetbee.data.model.User
 import com.example.budgetbee.ui.theme.Black
@@ -56,7 +60,8 @@ fun EditTransactionScreen(
     user: User?,
     tokenString: String?,
     transaction: Transaction,
-    categoryList: List<Category>
+    categoryList: List<Category>,
+    targetList: List<Target>,
 ) {
     val name = remember { mutableStateOf(transaction.name) }
     val categoryId = remember { mutableStateOf(transaction.categoryId) }
@@ -64,25 +69,33 @@ fun EditTransactionScreen(
     val amount = remember { mutableDoubleStateOf(transaction.amount) }
     val note = remember { mutableStateOf(transaction.note) }
     var isSaving by remember { mutableStateOf(transaction.isSaving) }
-    var expanded by remember { mutableStateOf(false) }
+    var categoryExpanded by remember { mutableStateOf(false) }
+    var targetExpanded by remember { mutableStateOf(false) }
     var selectedCategory = categoryList.find { it.id == categoryId.value }?.name ?: "Select Category"
+    var selectedTarget = targetList.find { it.id == targetId.value }?.name ?: "Select Target"
     val isTransactionUpdated = transactionViewModel.isTransactionUpdated
 
     LaunchedEffect(isTransactionUpdated) {
         if (isTransactionUpdated) {
-            navController.popBackStack()
+            navController.navigate("transaction")
             transactionViewModel.isTransactionUpdated = false
         }
     }
 
-    Scaffold(
-        modifier = Modifier.background(White),
-    ) { paddingValues ->
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .background(White),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Column(
             modifier = Modifier
-                .padding(paddingValues)
-                .padding(16.dp)
-                .background(White)
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.Start
         ) {
             Row {
                 Text(
@@ -114,6 +127,13 @@ fun EditTransactionScreen(
                     checked = isSaving,
                     onCheckedChange = {
                         isSaving = it
+                        if( it) {
+                            selectedTarget = "Select Target"
+                            targetId.value = ""
+                        } else {
+                            selectedTarget = "No Target"
+                            targetId.value = ""
+                        }
                     },
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = YellowPrimary,
@@ -133,7 +153,7 @@ fun EditTransactionScreen(
                     .background(White)
             )
             OutlinedTextField(
-                value = amount.value.toString(),
+                value = amount.doubleValue.toString(),
                 onValueChange = { newValue ->
                     amount.doubleValue = newValue.toDoubleOrNull() ?: 0.0
                 },
@@ -142,19 +162,51 @@ fun EditTransactionScreen(
                     .fillMaxWidth()
                     .background(White)
             )
-            OutlinedTextField(
-                value = targetId.value.toString(),
-                onValueChange = { targetId.value = it },
-                label = { Text("Target") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(White),
-                enabled = isSaving
-            )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(2.dp))
             Box(modifier = Modifier.fillMaxWidth()) {
                 OutlinedButton(
-                    onClick = { expanded = true },
+                    onClick = { targetExpanded = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    enabled = isSaving,
+                    shape = RoundedCornerShape(4.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = DropdownBackground,
+                        contentColor = Black
+                    ),
+                    contentPadding = PaddingValues(horizontal = 8.dp)
+                ) {
+                    Text(
+                        selectedTarget,
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Start,
+                        fontSize = 14.sp,
+                    )
+                    Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown Target")
+                }
+                DropdownMenu(
+                    expanded = targetExpanded,
+                    onDismissRequest = { targetExpanded = false },
+                    modifier = Modifier
+                        .background(Color.White)
+                ) {
+                    targetList.forEach { target ->
+                        DropdownMenuItem(
+                            text = { Text(target.name, fontSize = 14.sp, color = Color.Black) },
+                            onClick = {
+                                selectedTarget = target.name
+                                targetId.value = target.id
+                                targetExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(2.dp))
+            Box(modifier = Modifier.fillMaxWidth()) {
+                OutlinedButton(
+                    onClick = { categoryExpanded = true },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp),
@@ -174,8 +226,8 @@ fun EditTransactionScreen(
                     Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown Category")
                 }
                 DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
+                    expanded = categoryExpanded,
+                    onDismissRequest = { categoryExpanded = false },
                     modifier = Modifier
                         .background(Color.White)
                 ) {
@@ -185,13 +237,12 @@ fun EditTransactionScreen(
                             onClick = {
                                 selectedCategory = category.name
                                 categoryId.value = category.id
-                                expanded = false
+                                categoryExpanded = false
                             }
                         )
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = note.value.toString(),
                 onValueChange = { note.value = it },
@@ -200,41 +251,42 @@ fun EditTransactionScreen(
                     .fillMaxWidth()
                     .background(White)
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(
-                onClick = {
-                    transactionViewModel.updateTransaction(
-                        userId = user?.id.toString(),
-                        transactionId = transaction.id,
-                        name = name.value,
-                        categoryId = categoryId.value.toString(),
-                        targetId = targetId.value,
-                        amount = amount.doubleValue,
-                        note = note.value.toString(),
-                        isSaving = isSaving,
-                        dateTransaction = transaction.dateTransaction,
-                        token = tokenString
-                    )
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = YellowPrimary,
-                    contentColor = White
-                ),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Update Transaction"
+        }
+
+        Button(
+            onClick = {
+                Log.i("EditTransactionScreen", "Updating transaction. $isSaving, ${targetId.value}" )
+                transactionViewModel.updateTransaction(
+                    userId = user?.id.toString(),
+                    transactionId = transaction.id,
+                    name = name.value,
+                    categoryId = categoryId.value.toString(),
+                    targetId = targetId.value,
+                    amount = amount.doubleValue,
+                    note = note.value.toString(),
+                    isSaving = isSaving,
+                    dateTransaction = transaction.dateTransaction,
+                    token = tokenString
                 )
-                Text(
-                    text = "Update Transaction",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(8.dp)
-                )
-            }
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = YellowPrimary,
+                contentColor = White
+            ),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = "Update Transaction"
+            )
+            Text(
+                text = "Update Transaction",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(8.dp)
+            )
         }
     }
 }

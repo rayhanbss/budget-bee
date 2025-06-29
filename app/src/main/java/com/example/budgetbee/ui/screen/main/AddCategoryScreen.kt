@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -53,17 +54,32 @@ fun AddCategoryScreen(
             }
         }
     }
+
     val name = remember { mutableStateOf("") }
     val isExpense = remember { mutableStateOf(false) }
+    val isCategoryCreated = categoryViewModel.isCategoryCreated
 
-    Scaffold(
-        modifier = Modifier.background(White)
-    ) { paddingValues ->
+    LaunchedEffect(isCategoryCreated) {
+        if (isCategoryCreated) {
+            navController.navigate("dashboard")
+            categoryViewModel.isCategoryCreated = false
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .background(White),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Column(
             modifier = Modifier
-                .padding(paddingValues)
-                .padding(16.dp)
-                .background(White)
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.Start
         ) {
             Row {
                 Text(
@@ -113,44 +129,35 @@ fun AddCategoryScreen(
                     ),
                 )
             }
-            Button(
-                onClick = {
-                    categoryViewModel.createCategory(
-                        user = user,
-                        name = name.value,
-                        isExpense = isExpense.value,
-                        token = tokenString
-                    )
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = YellowPrimary,
-                    contentColor = White
-                ),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add Category",
-                )
-                Text(
-                    text = "Add New Category",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(8.dp)
-                )
-            }
         }
-
-        // Navigate when category is created
-        val isCreated = categoryViewModel.isCategoryCreated
-        LaunchedEffect(isCreated) {
-            if (isCreated) {
-                navController.navigate("dashboard") {
-                    popUpTo("dashboard") { inclusive = true }
-                }
-            }
+        Button(
+            onClick = {
+                categoryViewModel.createCategory(
+                    user = user,
+                    name = name.value,
+                    isExpense = isExpense.value,
+                    token = tokenString
+                )
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = YellowPrimary,
+                contentColor = White
+            ),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Add Category",
+            )
+            Text(
+                text = "Add New Category",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(8.dp)
+            )
         }
     }
 }

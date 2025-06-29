@@ -160,7 +160,7 @@ class MainActivity : ComponentActivity() {
                             },
                             onAddTarget = {
                                 showAddOptionsBottomSheet.value = false
-                                // navController.navigate("add_target")
+                                navController.navigate("add_target")
                             }
                         )
                     }
@@ -183,11 +183,9 @@ class MainActivity : ComponentActivity() {
                             navController = navController,
                             startDestination = "launch"
                         ) {
-                            composable("transaction") { TransactionScreen(transactionViewModel, user, tokenString, navController, categoryList) }
-                            composable("target") { TargetScreen(targetViewModel, user, tokenString) }
                             composable("dashboard") { DashboardScreen(userViewModel, transactionViewModel, targetViewModel, tokenString, navController) }
                             composable("transaction") { TransactionScreen(transactionViewModel, user, tokenString, navController, categoryList) }
-                            composable("target") { TargetScreen(targetViewModel, user, tokenString) }
+                            composable("target") { TargetScreen(targetViewModel, user, tokenString, navController) }
                             composable("profile") { ProfileScreen(context, navController, authViewModel, userViewModel) }
                             composable("login") { LoginScreen(navController, authViewModel) }
                             composable("register") { RegisterScreen(navController, authViewModel) }
@@ -200,7 +198,16 @@ class MainActivity : ComponentActivity() {
                                     transactionViewModel = transactionViewModel,
                                     user = user,
                                     tokenString = tokenString,
-                                    categoryList = categoryList
+                                    categoryList = categoryList,
+                                    targetList = targetViewModel.targets
+                                )
+                            }
+                            composable("add_target") {
+                                AddTargetScreen(
+                                    navController = navController,
+                                    targetViewModel = targetViewModel,
+                                    user = user,
+                                    tokenString = tokenString
                                 )
                             }
                             composable("edit_transaction/{transactionId}") { backStackEntry ->
@@ -213,8 +220,24 @@ class MainActivity : ComponentActivity() {
                                         user = user,
                                         tokenString = tokenString,
                                         transaction = transaction,
-                                        categoryList = categoryList
+                                        categoryList = categoryList,
+                                        targetList = targetViewModel.targets
                                     )
+                                }
+                            }
+                            composable("edit_target/{targetId}") { backStackEntry ->
+                                val targetId = backStackEntry.arguments?.getString("targetId")
+                                val target = targetViewModel.targets.find { it.id == targetId }
+                                if (target != null) {
+                                    EditTargetScreen(
+                                        navController = navController,
+                                        targetViewModel = targetViewModel,
+                                        user = user,
+                                        tokenString = tokenString,
+                                        target = target
+                                    )
+                                } else {
+                                    Log.e("MainActivity", "Target with ID $targetId not found")
                                 }
                             }
                         }

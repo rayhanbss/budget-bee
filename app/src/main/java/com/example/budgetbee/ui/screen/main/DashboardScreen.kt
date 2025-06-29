@@ -1,6 +1,5 @@
 package com.example.budgetbee.ui.screen.main
 
-import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,11 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -38,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.budgetbee.ui.component.CompactTargetCard
-import com.google.accompanist.placeholder.material3.placeholder
 import com.example.budgetbee.ui.component.TransactionRow
 import com.example.budgetbee.ui.theme.Black
 import com.example.budgetbee.ui.theme.Failed
@@ -50,9 +43,6 @@ import com.example.budgetbee.viewmodel.TransactionViewModel
 import com.example.budgetbee.viewmodel.UserViewModel
 import com.google.accompanist.placeholder.placeholder
 import com.example.budgetbee.util.CurrencyUtils
-import java.util.Locale
-import kotlin.compareTo
-import kotlin.math.abs
 
 @Composable
 fun DashboardScreen(
@@ -303,6 +293,10 @@ fun DashboardScreen(
                         filteredTargets.take(3).forEach { item ->
                             CompactTargetCard(
                                 target = item,
+                                targetViewModel = targetViewModel,
+                                user = user,
+                                token = tokenString,
+                                navController = navController,
                             )
                         }
                     }

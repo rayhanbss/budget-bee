@@ -119,7 +119,7 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<TargetResponse>
 
-    @PATCH("users/{userId}/targets")
+    @PATCH("users/{userId}/targets/{targetId}")
     @Headers("Content-Type: application/json")
     suspend fun updateTarget(
         @Path("userId") userId: String,
@@ -128,13 +128,13 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<TargetResponse>
 
-    @DELETE("users/{userId}/targets")
+    @DELETE("users/{userId}/targets/{targetId}")
     @Headers("Content-Type: application/json")
     suspend fun deleteTarget(
         @Path("userId") userId: String,
         @Path("targetId") targetId: String,
         @Header("Authorization") token: String
-    ): Response<TargetResponse>
+    ): Response<Unit>
 
     //Category endpoints ---------------------------------------------------------------------------
     @GET("users/{userId}/categories")

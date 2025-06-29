@@ -1,6 +1,5 @@
 package com.example.budgetbee.ui.component
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,19 +20,25 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.budgetbee.data.model.Target
+import com.example.budgetbee.data.model.User
 import com.example.budgetbee.ui.theme.Black
 import com.example.budgetbee.ui.theme.White
 import com.example.budgetbee.ui.theme.YellowPrimary
 import com.example.budgetbee.ui.theme.YellowTertiary
 import com.example.budgetbee.util.CurrencyUtils
-import java.util.Locale
+import com.example.budgetbee.viewmodel.TargetViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CompactTargetCard(
     modifier: Modifier = Modifier,
     target: Target,
+    targetViewModel: TargetViewModel,
+    user: User?,
+    token: String?,
+    navController: NavHostController,
 ) {
     val progress = if (target.amountNeeded > 0) {
         (target.amountCollected.toDouble() / target.amountNeeded).coerceIn(0.0, 1.0).toFloat()
@@ -50,7 +55,12 @@ fun CompactTargetCard(
         ) {
             TargetDetail(
                 target = target,
-                progress = progress
+                progress = progress,
+                targetViewModel = targetViewModel,
+                user = user,
+                token = token ?: "",
+                navController = navController,
+                showBottomSheet = showBottomSheet
             )
         }
     }

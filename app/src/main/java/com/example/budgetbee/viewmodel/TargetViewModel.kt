@@ -60,20 +60,21 @@ class TargetViewModel (
     }
 
     fun createTarget(
-        userId: String?,
+        user: User?,
         name: String,
         amountNeeded: Double,
         deadline: String,
-        token: String?) {
+        token: String?
+    ) {
         viewModelScope.launch {
             isLoading = true
             errorMessage = null
             isTargetCreated = false
 
             try {
-                Log.i("TargetViewModel", "Creating target for user: $userId, token: $token, name:$name, amountNeeded: $amountNeeded, deadline: $deadline")
+                Log.i("TargetViewModel", "Creating target for user: ${user?.id}, token: $token, name:$name, amountNeeded: $amountNeeded, deadline: $deadline")
                 val response = targetRepository.createTarget(
-                    userId = userId ?: "",
+                    userId = user?.id.toString(),
                     name = name,
                     amountNeeded = amountNeeded,
                     deadline = deadline,
@@ -83,6 +84,7 @@ class TargetViewModel (
                 if (response.isSuccessful) {
                     val body = response.body()
                     Log.i("TargetViewModel", "Target posted successfully: $body")
+                    getAllTarget(user, token)
                     isTargetCreated = true
                 } else {
                     val errorBody = response.errorBody()?.string()
@@ -97,6 +99,84 @@ class TargetViewModel (
             }
         }
     }
+
+    fun updateTarget(
+        user: User?,
+        targetId: String?,
+        name: String,
+        amountNeeded: Double,
+        deadline: String,
+        token: String?
+    ) {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+            isTargetUpdated = false
+
+            try {
+                Log.i("TargetViewModel", "Updating target for user: ${user?.id}, targetId: $targetId, token: $token, name:$name, amountNeeded: $amountNeeded, deadline: $deadline")
+                val response = targetRepository.updateTarget(
+                    userId = user?.id.toString(),
+                    targetId = targetId ?: "",
+                    name = name,
+                    amountNeeded = amountNeeded,
+                    deadline = deadline,
+                    token = token ?: ""
+                )
+
+                if (response.isSuccessful) {
+                    Log.i("TargetViewModel", "Target updated successfully")
+                    getAllTarget(user, token)
+                    isTargetUpdated = true
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    errorMessage = errorBody ?: "Unknown error"
+                    Log.e("TargetViewModel", "Error updating target: $errorMessage, Status: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                errorMessage = e.message
+                Log.e("TargetViewModel", "Exception updating target: ${e.message}")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun deleteTarget(
+        user: User?,
+        targetId: String?,
+        token: String?
+    )
+    {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+
+            try {
+                Log.i("TargetViewModel", "Deleting target for user: ${user}, targetId: $targetId, token: $token")
+                val response = targetRepository.deleteTarget(
+                    userId = user?.id.toString(),
+                    targetId = targetId ?: "",
+                    token = token ?: ""
+                )
+
+                if (response.isSuccessful) {
+                    Log.i("TargetViewModel", "Target deleted successfully")
+                    getAllTarget(user, token)
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    errorMessage = errorBody ?: "Unknown error"
+                    Log.e("TargetViewModel", "Error deleting target: $errorMessage, Status: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                errorMessage = e.message
+                Log.e("TargetViewModel", "Exception deleting target: ${e.message}")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
 }
 
 fun TargetResponse.toTarget(): Target {

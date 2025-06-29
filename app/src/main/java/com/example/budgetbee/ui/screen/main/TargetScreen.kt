@@ -1,25 +1,14 @@
 package com.example.budgetbee.ui.screen.main
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DirectionsCar
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Flight
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Laptop
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -28,32 +17,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.budgetbee.R
-import com.example.budgetbee.data.model.Target
+import androidx.navigation.NavHostController
 import com.example.budgetbee.data.model.User
-import com.example.budgetbee.ui.component.CategoryChip
 import com.example.budgetbee.ui.component.CompactTargetCard
-import com.example.budgetbee.ui.component.MiniTargetCard
 import com.example.budgetbee.ui.theme.Black
-import com.example.budgetbee.ui.theme.BudgetBeeTheme
 import com.example.budgetbee.ui.theme.White
 import com.example.budgetbee.ui.theme.YellowPrimary
 import com.example.budgetbee.viewmodel.TargetViewModel
-import com.example.budgetbee.viewmodel.TransactionViewModel
 import com.google.accompanist.placeholder.placeholder
 
 @Composable
 fun TargetScreen(
     targetViewModel: TargetViewModel,
     user: User?,
-    token: String?
+    token: String?,
+    navController: NavHostController
 ) {
 
     LaunchedEffect(user, token) {
@@ -187,6 +168,10 @@ fun TargetScreen(
                 items(filteredTargets) { item ->
                     CompactTargetCard(
                         target = item,
+                        targetViewModel = targetViewModel,
+                        user = user,
+                        token = token ?: "",
+                        navController = navController
                     )
                 }
             }

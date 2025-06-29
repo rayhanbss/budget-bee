@@ -20,7 +20,7 @@ class TargetRepository (context: Context){
     ) = RetrofitClient.apiService.createTarget(
         userId,
         TargetRequest(name, amountNeeded, deadline),
-        "Baerer $token"
+        "Bearer $token"
     )
 
     suspend fun updateTarget(
@@ -28,15 +28,13 @@ class TargetRepository (context: Context){
         targetId: String,
         name: String,
         amountNeeded: Double,
-        amountCollected: Double,
         deadline: String,
-        status: String,
         token: String
     ) = RetrofitClient.apiService.updateTarget(
         userId, targetId, TargetRequest(name, amountNeeded, deadline),
-        "Baerer $token"
+        "Bearer $token"
     )
 
     suspend fun deleteTarget(userId: String, targetId: String, token: String) =
-        RetrofitClient.apiService.deleteTarget(userId, targetId, "Baerer $token")
+        RetrofitClient.apiService.deleteTarget(userId, targetId, "Bearer $token")
 }
