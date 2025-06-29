@@ -52,22 +52,5 @@ const val BASE_URL = "http://10.0.2.2:8080/"
 
 ## 👩‍💻 Tim Pengembang
 
-<p align="center">
-  <a href="https://github.com/rayhanbss" style="margin: 0 15px; text-align: center;">
-    <img src="https://github.com/rayhanbss.png?size=100" width="100" style="border-radius:50%;" alt="Rayhan Bagus Sadewa"/><br/>
-    <sub><b>Rayhan Bagus Sadewa</b></sub>
-  </a>
-  <a href="https://github.com/safinasabil" style="margin: 0 15px; text-align: center;">
-    <img src="https://github.com/safinasabil.png?size=100" width="100" style="border-radius:50%;" alt="Safina Sabil"/><br/>
-    <sub><b>Safina Sabil</b></sub>
-  </a>
-  <a href="https://github.com/syvlnl" style="margin: 0 15px; text-align: center;">
-    <img src="https://github.com/syvlnl.png?size=100" width="100" style="border-radius:50%;" alt="Syavela Nisrina Liset"/><br/>
-    <sub><b>Syavela Nisrina Liset</b></sub>
-  </a>
-  <a href="https://github.com/Velelen" style="margin: 0 15px; text-align: center;">
-    <img src="https://github.com/Velelen.png?size=100" width="100" style="border-radius:50%;" alt="Velen Novanti"/><br/>
-    <sub><b>Velen Novanti</b></sub>
-  </a>
-</p>
+| [<img src="https://github.com/rayhanbss.png" width="100px"><br><sub><b>Rayhan Bagus Sadewa</b></sub>](https://github.com/rayhanbss) | [<img src="https://github.com/safinasabil.png" width="100px"><br><sub><b>Safina Sabil</b></sub>](https://github.com/safinasabil) | [<img src="https://github.com/syvlnl.png" width="100px"><br><sub><b>Syavela N. Liset</b></sub>](https://github.com/syvlnl) | [<img src="https://github.com/Velelen.png" width="100px"><br><sub><b>Velen Novanti</b></sub>](https://github.com/Velelen) |
 
