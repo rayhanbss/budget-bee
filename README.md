@@ -54,8 +54,7 @@ const val BASE_URL = "http://10.0.2.2:8080/"
 
 > Catatan: Jika menjalankan di emulator Android, gunakan `10.0.2.2` untuk mengakses `localhost` pada komputer host.
 
-> Jika menggunakan perangkat fisik (HP), ubah `BASE_URL` menjadi `"http://<IP-perangkat-hoster>:8080/"` di `ApiService.kt`, jalankan server API server pada IP tersebut `php artisan serve --host:<IP-perangkat-hoster> --port:8080`, dan pastikan perangkat Android dan server API berada di jaringan yang sama.
-
+> Jika menggunakan perangkat fisik (HP), ubah `BASE_URL` menjadi `"http://<IP-perangkat-hoster>:8000/"` di `ApiService.kt`, jalankan server API server pada IP tersebut `php artisan serve --host:<IP-perangkat-hoster> --port:8000`, dan pastikan perangkat Android dan server API berada di jaringan yang sama.
 
 ## 👩‍💻 Tim Pengembang
 
