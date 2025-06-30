@@ -20,16 +20,29 @@ BudgetBee merupakan aplikasi berbasis Android untuk membantu anda untuk mengelol
 
 ## 🌐 API Server
 
-BudgetBee membutuhkan API server Laravel untuk penyimpanan dan pengambilan data. Silakan clone dan jalankan API server dari repository berikut:
+BudgetBee membutuhkan API server Laravel untuk penyimpanan dan pengambilan data. Silakan clone dan jalankan API server dari repository berikut, pada branch release/api-v1:
 
 https://github.com/syvlnl/BuBee
 
 1. Clone repository API server:
 ```
 git clone https://github.com/syvlnl/BuBee.git
+cd BuBee
+git checkout release/api-v1
+
 ```
 2. Ikuti instruksi di README di repo BuBee untuk menjalankan server (default: http://localhost:8080).
 3. Pastikan server API berjalan sebelum menjalankan aplikasi BudgetBee.
+
+## ▶️ Cara Menjalankan Aplikasi
+
+1. Clone repository ini:
+   ```
+   git clone https://github.com/rayhanbss/budget-bee
+   ```
+2. Buka proyek di Android Studio.
+3. Sinkronisasi Gradle dan tunggu proses build selesai.
+4. Jalankan aplikasi di emulator atau perangkat Android.
 
 ## ⚙️ Konfigurasi Aplikasi
 
@@ -41,17 +54,8 @@ const val BASE_URL = "http://10.0.2.2:8080/"
 
 > Catatan: Jika menjalankan di emulator Android, gunakan `10.0.2.2` untuk mengakses `localhost` pada komputer host.
 
-> Jika menggunakan perangkat fisik (HP), ubah `BASE_URL` menjadi `"http://<IP-perangkat-hoster>:8080/"` di `ApiService.kt`, jalankan server API pada IP tersebut, dan pastikan perangkat Android dan server API berada di jaringan yang sama.
+> Jika menggunakan perangkat fisik (HP), ubah `BASE_URL` menjadi `"http://<IP-perangkat-hoster>:8080/"` di `ApiService.kt`, jalankan server API server pada IP tersebut `php artisan serve --host:<IP-perangkat-hoster> --port:8080`, dan pastikan perangkat Android dan server API berada di jaringan yang sama.
 
-## ▶️ Cara Menjalankan Aplikasi
-
-1. Clone repository ini:
-   ```
-   git clone https://github.com/rayhanbss/budget-bee
-   ```
-2. Buka proyek di Android Studio.
-3. Sinkronisasi Gradle dan tunggu proses build selesai.
-4. Jalankan aplikasi di emulator atau perangkat Android.
 
 ## 👩‍💻 Tim Pengembang
 
